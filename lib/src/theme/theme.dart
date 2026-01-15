@@ -17,6 +17,9 @@ class ControlCustomizations {
     this.tabs = const {},
     this.menus = const {},
     this.menuItems = const {},
+    this.bottomBars = const {},
+    this.bottomBarItems = const {},
+    this.drawers = const {},
   });
 
   /// Map of button tags to their customization. Null key is the default.
@@ -37,6 +40,9 @@ class ControlCustomizations {
   final Map<String?, TabCustomization> tabs;
   final Map<String?, MenuCustomization> menus;
   final Map<String?, MenuItemCustomization> menuItems;
+  final Map<String?, BottomBarCustomization> bottomBars;
+  final Map<String?, BottomBarItemCustomization> bottomBarItems;
+  final Map<String?, DrawerCustomization> drawers;
 
   ButtonCustomization? getButton(String? tag) => buttons[tag] ?? buttons[null];
   TextFieldCustomization? getTextField(String? tag) =>
@@ -57,6 +63,11 @@ class ControlCustomizations {
   MenuCustomization? getMenu(String? tag) => menus[tag] ?? menus[null];
   MenuItemCustomization? getMenuItem(String? tag) =>
       menuItems[tag] ?? menuItems[null];
+  BottomBarCustomization? getBottomBar(String? tag) =>
+      bottomBars[tag] ?? bottomBars[null];
+  BottomBarItemCustomization? getBottomBarItem(String? tag) =>
+      bottomBarItems[tag] ?? bottomBarItems[null];
+  DrawerCustomization? getDrawer(String? tag) => drawers[tag] ?? drawers[null];
 }
 
 /// An [InheritedWidget] that provides [ControlCustomizations] to its descendants.

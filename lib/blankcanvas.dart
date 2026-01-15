@@ -13,3 +13,5 @@ export 'src/widgets/progress_indicator.dart';
 export 'src/widgets/scrollbar.dart';
 export 'src/widgets/tabs.dart';
 export 'src/widgets/menu.dart';
+export 'src/widgets/bottom_bar.dart';
+export 'src/widgets/drawer.dart';

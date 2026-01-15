@@ -161,3 +161,40 @@ class MenuItemCustomization
 
   final EdgeInsetsGeometry? padding;
 }
+
+/// Customization for BottomBar.
+class BottomBarCustomization
+    extends ControlCustomization<BottomBarControlStatus> {
+  const BottomBarCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.height,
+  });
+
+  final double? height;
+}
+
+/// Customization for BottomBar Item.
+class BottomBarItemCustomization
+    extends ControlCustomization<BottomBarItemControlStatus> {
+  const BottomBarItemCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.padding,
+  });
+
+  final EdgeInsetsGeometry? padding;
+}
+
+/// Customization for Drawers.
+class DrawerCustomization extends ControlCustomization<DrawerControlStatus> {
+  const DrawerCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.width,
+    this.modalBarrierColor,
+  });
+
+  final double? width;
+  final Color? modalBarrierColor;
+}

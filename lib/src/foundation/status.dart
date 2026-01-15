@@ -163,3 +163,26 @@ class TabControlStatus extends MutableControlStatus {
 class MenuItemControlStatus extends MutableControlStatus {
   // Base interaction (hover/focus)
 }
+
+/// Status for a Bottom Bar (Container).
+class BottomBarControlStatus extends MutableControlStatus {
+  // Mostly static, but could track visibility or scroll state in future.
+}
+
+/// Status for a Bottom Bar Item.
+class BottomBarItemControlStatus extends MutableControlStatus {
+  /// Whether the item is selected/active.
+  double get selected => _selected;
+  double _selected = 0.0;
+  set selected(double v) {
+    if (_selected != v) {
+      _selected = v;
+      notify();
+    }
+  }
+}
+
+/// Status for a Drawer.
+class DrawerControlStatus extends MutableControlStatus {
+  // Container status.
+}

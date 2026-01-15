@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 import 'blankcanvas.dart';
 
@@ -278,6 +279,7 @@ class _SettingsPageState extends State<SettingsPage> {
   double _brightness = 0.5;
 
   void _dummyCallback() {}
+  void _onBottomItemTapped() {}
 
   @override
   Widget build(BuildContext context) {
@@ -394,6 +396,35 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             const SizedBox(height: 20),
+            // Bottom Bar
+            const Text(
+              "Bottom Bar",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            BottomBar(
+              items: [
+                BottomBarItem(
+                  icon: const Icon(Icons.home),
+                  label: const Text("Home"),
+                  selected: true,
+                  onTap: _onBottomItemTapped,
+                ),
+                BottomBarItem(
+                  icon: const Icon(Icons.search),
+                  label: const Text("Search"),
+                  selected: false,
+                  onTap: _onBottomItemTapped,
+                ),
+                BottomBarItem(
+                  icon: const Icon(Icons.person),
+                  label: const Text("Profile"),
+                  selected: false,
+                  onTap: _onBottomItemTapped,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             // Scrollable area
             const Text(
               "Scrollable Content",
@@ -415,6 +446,19 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             const SizedBox(height: 20),
+            Button(
+              onPressed: () {
+                showDrawer(
+                  context: context,
+                  tag: null, // Default
+                  builder: (context) => const Drawer(
+                    child: Center(child: Text("I am a Drawer!")),
+                  ),
+                );
+              },
+              child: const Text('Show Drawer'),
+            ),
+            const SizedBox(height: 10),
             Button(
               onPressed: () {
                 showGeneralDialog(
