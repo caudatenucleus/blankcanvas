@@ -13,6 +13,7 @@ class ControlCustomizations {
     this.cards = const {},
     this.progressIndicators = const {},
     this.dialogs = const {},
+    this.scrollbars = const {},
   });
 
   /// Map of button tags to their customization. Null key is the default.
@@ -29,6 +30,7 @@ class ControlCustomizations {
   final Map<String?, CardCustomization> cards;
   final Map<String?, ProgressCustomization> progressIndicators;
   final Map<String?, DialogCustomization> dialogs;
+  final Map<String?, ScrollbarCustomization> scrollbars;
 
   ButtonCustomization? getButton(String? tag) => buttons[tag] ?? buttons[null];
   TextFieldCustomization? getTextField(String? tag) =>
@@ -43,6 +45,8 @@ class ControlCustomizations {
   ProgressCustomization? getProgressIndicator(String? tag) =>
       progressIndicators[tag] ?? progressIndicators[null];
   DialogCustomization? getDialog(String? tag) => dialogs[tag] ?? dialogs[null];
+  ScrollbarCustomization? getScrollbar(String? tag) =>
+      scrollbars[tag] ?? scrollbars[null];
 }
 
 /// An [InheritedWidget] that provides [ControlCustomizations] to its descendants.

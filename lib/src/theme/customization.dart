@@ -114,3 +114,19 @@ class DialogCustomization extends ControlCustomization<CardControlStatus> {
 
   final Color? modalBarrierColor;
 }
+
+/// Customization for Scrollbars.
+class ScrollbarCustomization
+    extends ControlCustomization<ScrollbarControlStatus> {
+  const ScrollbarCustomization({
+    required super.decoration, // Used for the THUMB
+    required super.textStyle,
+    this.trackDecoration, // Used for the TRACK
+    this.thickness,
+    this.thumbMinLength,
+  });
+
+  final Decoration Function(ScrollbarControlStatus status)? trackDecoration;
+  final double? thickness;
+  final double? thumbMinLength;
+}

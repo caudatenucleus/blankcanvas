@@ -132,3 +132,16 @@ class ProgressControlStatus extends MutableControlStatus {
 
 /// Status for a Card. Matches base interactions.
 class CardControlStatus extends MutableControlStatus {}
+
+/// Status for a Scrollbar.
+class ScrollbarControlStatus extends MutableControlStatus {
+  /// Whether the user is dragging the scrollbar thumb.
+  double get dragging => _dragging;
+  double _dragging = 0.0;
+  set dragging(double v) {
+    if (_dragging != v) {
+      _dragging = v;
+      notify();
+    }
+  }
+}

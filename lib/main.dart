@@ -139,6 +139,24 @@ class DemoApp extends StatelessWidget {
             textStyle: (status) => const TextStyle(),
           ),
         },
+        scrollbars: {
+          null: ScrollbarCustomization(
+            thickness: 10.0,
+            thumbMinLength: 40.0,
+            decoration: (status) {
+              return BoxDecoration(
+                color: status.hovered > 0.5
+                    ? const Color(0x80000000)
+                    : const Color(0x40000000),
+                borderRadius: BorderRadius.circular(5),
+              );
+            },
+            trackDecoration: (status) {
+              return const BoxDecoration(color: Color(0x10000000));
+            },
+            textStyle: (_) => const TextStyle(),
+          ),
+        },
       ),
       home: const LoginPage(),
     );
@@ -336,6 +354,27 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 10),
                     const ProgressIndicator(value: 0.7), // Demo progress
                   ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Scrollable area
+            const Text(
+              "Scrollable Content",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Container(
+              height: 150,
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFFEEEEEE)),
+              ),
+              child: Scrollbar(
+                child: ListView.builder(
+                  itemCount: 20,
+                  itemBuilder: (c, i) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("Item $i"),
+                  ),
                 ),
               ),
             ),
