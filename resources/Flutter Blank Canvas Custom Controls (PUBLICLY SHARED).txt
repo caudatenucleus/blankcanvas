@@ -1,0 +1,1225 @@
+﻿PUBLICLY SHARED
+Flutter Blank Canvas Custom Controls
+November 2022 - Ian 'Hixie' Hickson - Flutter Team - flutter.dev/go/blankcanvas
+Status as of 2023-07-11: I have been working on a proof of concept package. I have buttons and scrollbars implemented. Next is text fields. It's not something I'm working on full-time.
+Comments are disabled by default to reduce vandalism; feel free to request edit access if you have comments to add. Pinging me on the Flutter Discord is another way of providing feedback.
+Introduction
+What problem is this solving?
+There are very few high-quality bespoke branded widget sets in the Flutter ecosystem.
+Goals
+The long-term goal of this proposal is to lower the cost for people to create high-quality bespoke widget sets, whether to better fit their brand identity, further differentiate themselves from competing apps, or just to add whimsy.
+The target audience includes people relatively new to Flutter, and people whose expertise does not include topics such as accessibility that are key to creating good widget sets.
+As the appearance of the controls, rather than the operation of the controls, is the key concern in this proposal, the accessibility, interactivity (touch, mouse, keyboard), localization, and other non-visual aspects can be built to the highest standards without needing to be customizable.
+Non-goals
+This proposal does not intend to replace the Material widget set as Flutter's premium and out-of-the-box default widget set, nor is it intended for this proposal to be used to reimplement a widget set with the nuance and detail of something like the Material controls.
+Complicated widgets such as rich text editors, spreadsheets, or controls for editing an image are also out of scope.
+Related issues
+* #53059 Suggestion: decouple more widgets from Android/iOS design guidelines
+Background
+One of the features of Flutter that we have long touted is the ability for people to write their own widget sets. People have occasionally taken us up on that; some examples are listed below. However, we have not seen as many such packages as we would have expected, and anecdotally people report that doing this is too difficult to be worth the effort.
+The tables below summarize the state of some of these libraries (in alphabetical order), plus the Material and Cupertino libraries for completeness. One immediate thing to notice is how there isn't a single widget set package that has no dependencies on the Material library. The closest is the arna package, which only uses Material for localizations and icons, and our own chicago package, which aims to not rely on Material but still has some dependencies today. Even arna, though, can hardly be said to be independent of the Material library as it draws heavily from the Material implementation, following its API extremely closely (e.g. down to having a GridTileBar).
+Depending on the Material library is not a problem in general; some widget sets, such as yaru_widgets, are explicitly little more than themed Material widgets and widgets built by composing Material widgets. Such widget sets are valuable, but are limited in the extent to which they can change the look of the controls. For example, while a Material checkbox control's colors can be changed, and while the shader that renders the splash can be adjusted, fundamentally a Material checkbox has a specific shape and animation that intentionally cannot be customized (because doing so would make it not a Material checkbox).
+Widget Set
+	Widget set dependency
+	cupertino
+	None
+	material
+	Cupertino
+	arna
+	Material for localizations, icons (but heavily based on Material)
+	chicago[1]
+	Material for text fields, bottom sheets, popup menus
+	fluent_ui
+	Material
+	getwidget
+	Material; Cupertino for the activity indicator
+	glassmorphism_widgets
+	Material[2]
+	libadwaita
+	Material
+	macos_ui
+	Material and Cupertino
+	neon_widgets
+	Material
+	one_ui
+	Material
+	phoenix_widgets
+	Material; Cupertino for some dialogs
+	ud_widgets
+	Material
+	yaru_widgets
+	Material
+	
+
+Widgets
+	c
+	m
+	a
+	c
+	f
+	g
+	g
+	l
+	m
+	n
+	o
+	p
+	u
+	y
+	About box
+	N
+	Y
+	Y
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	Avatar
+	N
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	Badge
+	N
+	N
+	N
+	N
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Bottom Bar
+	Y
+	Y
+	Y
+	N
+	Y
+	Y
+	Y
+	N
+	N
+	N
+	Y
+	Y
+	N
+	N
+	Buttons
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Card / Container
+	N
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	Y
+	N
+	Y
+	Y
+	Y
+	Carousel
+	N
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	Y
+	N
+	Y
+	Checkbox
+	N
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	Y
+	Color Picker
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	Y
+	Combo Box
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Date/Time Pickers
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	Dialogs
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	Y
+	Y
+	Y
+	Y
+	Disclosure
+	N
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	N
+	Y
+	N
+	Y
+	Divider
+	N
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	Y
+	N
+	Drawer
+	N
+	Y
+	Y
+	N
+	N
+	Y
+	Y
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	Dropdown
+	N
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	Y
+	Y
+	Y
+	N
+	Y
+	N
+	N
+	Grid Tile
+	N
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Header
+	Y
+	Y
+	Y
+	N
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	Header (Scrolling)
+	Y
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	License Page
+	N
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	List Box
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	List Tile
+	N
+	Y
+	Y
+	N
+	Y
+	Y
+	Y
+	N
+	Y
+	N
+	N
+	Y
+	N
+	Y
+	Notification Popup
+	N
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	Page Indicator
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Popup Menu
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	N
+	Y
+	Y
+	N
+	Y
+	N
+	N
+	Y
+	Progress Indicator
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	N
+	Y
+	Y
+	N
+	Y
+	N
+	Y
+	Radio Button
+	N
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	N
+	Y
+	N
+	N
+	N
+	Y
+	Y
+	Ratings
+	N
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	Reorderable List
+	N
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Scroll Bar
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Search Field
+	Y
+	N
+	Y
+	N
+	N
+	Y
+	N
+	N
+	Y
+	Y
+	N
+	Y
+	N
+	N
+	Segmented Control
+	Y
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	Sheets
+	Y
+	Y
+	N
+	N
+	Y
+	Y
+	Y
+	N
+	Y
+	N
+	N
+	Y
+	N
+	N
+	Slider
+	Y
+	Y
+	Y
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	Spinner
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Splitter
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	Switch
+	Y
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	Y
+	N
+	N
+	Y
+	Table
+	N
+	Y
+	Y
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Tabs
+	Y
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	N
+	Y
+	N
+	N
+	Y
+	N
+	Y
+	Text Field
+	Y
+	Y
+	Y
+	Y
+	Y
+	Y
+	N
+	Y
+	Y
+	Y
+	N
+	Y
+	Y
+	N
+	Toolbar
+	N
+	Y
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	Tooltips
+	N
+	Y
+	Y
+	Y
+	Y
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	Tree View
+	N
+	N
+	N
+	N
+	Y
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	N
+	
+
+The second thing to notice is that these widget sets vary a lot in terms of coverage (the "Y" cells in the table above).
+  
+
+Some of the omissions among the smaller widget sets are relatively important, too, e.g. few have scrolling headers (equivalent to Material's SliverAppBar), and most rely on the Material library's scroll bars and license page.
+Another observation is that the only control that is uniformly supported by all the widget sets is the humble button. Indeed, it is common for widget sets to have several variants of buttons.
+Terminology
+The term blank canvas refers to a content-free starting point for art. In this context, it means providing tools for making new custom controls.
+For clarity, in this document, the term "widget set creator" refers to the programmer (or team of programmers) who creates the customized controls, for example as a package uploaded to pub.
+The term "app developer" refers to the programmer (or team of programmers) who import the widget set and use it to create an end-user application.
+The user is a customer of the app developer, who is a customer of the widget set creator.
+Proposal
+This document proposes to create a package ("blankcanvas") for widget set creators to use as a base for creating new widget sets. By providing all the difficult logic of a widget set, we can provide a package that addresses the same need for widget set creators as the Material library does today, but in a form that is more conducive to customization.
+Vision
+A blankcanvas package could be designed so as to make it easy to create bespoke branding and automatically get a whole slew of widgets with that branding. For example, many widgets can be represented as rectangles. If a Decoration class can draw the particular kind of rectangle used by a widget set in a variety of states (e.g. focused, active, selected, etc), it could be used to create everything from buttons to cards to text fields to drop down and popups. More specialized decorations can then be used for additional widgets like checkboxes and switches.
+Fundamentals
+Decorations
+For the rendering of simple controls, let us start with an AnimatedDecoration widget, switching between Decorations created with the control's current state.
+For example, consider a check box. It has a number of orthogonal states:
+* Focused (the keyboard focus is on the control)
+* Hovered (the mouse cursor is over the control)
+* Active (the mouse or touch is pressing the control)
+* Enabled (whether the control can be activated)
+* Unchecked, Checked, or Indeterminate (the logical status of the checkbox)
+By creating a Decoration subclass that knows how to paint each of these states and transition between them, a checkbox control can be represented as an AnimatedDecoration between the last state and the newest state. Checkboxes can thus be customized by providing new decorations, without changing any of the other logic.
+This applies to many controls, and provides a basis through which customizations can be created.
+Transitions between boolean states require that the booleans actually be represented internally as doubles in the range 0.0 (false) to 1.0 (true).
+Typography
+Separate from decorations, but equally important to the look of controls that involve text, is the TextStyle used by the control. Ideally, this would also be configurable based on the aforementioned states; for example, a focused text field may use a different text color than an unfocused text field, or a selected tab may have a different font weight than an unselected tab. Furthermore, as with the decorations, animating between the states is typically desirable.
+Unfortunately while Flutter's core framework comes with a convention for describing and animating between decorations described by states, it does not have an equivalent affordance for TextStyle objects. Thus, this package will need to introduce this concept.
+Dimensions
+In addition, some controls may require explicit dimensions (width and height, or in some cases merely an aspect ratio) to be given as part of the customization. For example, a check box is typically a fixed size in a given widget set, and the application developer can place a checkbox anywhere safe in the knowledge that it will take on that size regardless. Typically such fixed dimensions are constant for the lifetime of a control, so there is no need to provide an animation mechanism for them. For example, checkboxes do not change dimensions based on their state (and doing so would indeed be a poor user experience). The few controls that do animate their dimensions (e.g. disclosure widgets) do so in a way that does not need to be customized (e.g. going from a fixed customized dimension to automatically sizing around the widget's children).
+Behavior
+Layered on top of this, we must represent the semantics of the control (for accessibility) and the behavior (the "feel" part of the "look and feel"), which may consist of haptic feedback, localization, and interactivity. These aspects, however, do not need to be customizable, and can instead be hard-coded as decisions made by the control in the "blankcanvas" package.
+Animation
+Some widget sets may wish to provide continuous animation, e.g. indeterminate progress indicators typically spin continually. Which widgets animate is not necessarily obvious; e.g. Aqua buttons (from older versions of macOS) would pulsate when focused, while buttons in most widget sets are static.
+Decorations support animation via the Painter onChanged feature. For efficiency, any Tickers used to trigger this must come from an in-tree Ticker factory. So that the tickers are only created when they are necessary, rather than passing in Tickers to each Decoration, the widgets would pass in TickerProviders.
+There is no simple way to animate text styles in a similar way, but this is probably a good thing for usability (and performance).
+Durations and curves
+Animations are not instantaneous (and may be intentionally curved so as to give a more lively feel to the interface than linear interpolation). The customizations for any decorations, typography, or other animated values must therefore always be combined with durations and curves. For simplicity, a widget set can specify a default value for each, with individual animations being able to override those defaults as needed.
+Visibility
+Widgets like popup menus and dialogs are not permanently visible but instead appear and disappear. These widgets typically have an animation when they come into view. To represent this in a decoration, a visibility state (an animated boolean represented as a double from 0.0 to 1.0) is provided to the decoration, and the animation is triggered by starting with a false visibility and immediately transitioning to a true visibility.
+Application
+Several choices come to mind for how one would actually customize the controls, taking the templates provided by this proposal, and creating a coherent widget set.
+Subclassing
+The traditional OOP mechanism for extending an implementation in Dart would be to subclass it. An abstract class could provide the main building blocks, and the widget set creator would subclass each of these to provide the controls for the developer. Such an approach would allow the widget set creator to make multiple variants of a control, e.g. several buttons, by providing different subclasses.
+Composition
+In Flutter, the normal mechanism for creating widgets is, of course, composition. This would be very similar to subclassing in practice, with the same pros and cons.
+Inherited widgets
+Another alternative is to customize controls by use of an inherited widget. Users of the customized widget sets would then use the same widgets regardless of the actual set in use, which would enable developers to switch between widget sets easily just by changing the inherited widget that configures the rendering.
+To allow multiple variants of the same control, the widget could take a parameter giving a String similar to classes in HTML/CSS, for example:
+Button(
+ tag: 'primary',
+ onPressed: _approve,
+ child: Text('Approve'),
+),
+(The obvious improvement, making this strongly typed by using an enum or similar, is unfortunately not simple if we have a predefined set of widgets, since there is nowhere to declare the type.)
+These tags would be represented in the inherited widget. For example, instead of a map of widget to customization, the customizations could be represented as a map of widget/tag pairs to customizations.
+In general, the question of how to represent the customizations in a type-safe manner is an interesting one. A single Map would not be ideal (no type safety). One option would be to have a map per widget type, for each tag, with a default value as the `null` tag, and then hard-code the list of widgets as properties, like this:
+class Customizations {
+ final Map<String?, ButtonCustomizations> buttons;
+ final Map<String?, TextFieldCustomizations> textFields;
+ final Map<String?, PageIndicatorCustomizations> pageIndicators;
+ // ...
+}
+Ideally a widget set would not be required to provide customizations for all the widgets out of the box (if for no other reason than that would make extending the set in new versions difficult). This suggests the inherited widget should have a very plain default for each type.
+Explicit arguments
+In principle, one could also require that the application developer explicitly specify the animation configuration for each control.
+Hybrid approach
+The reality is that composition (and subclassing for that matter) are always possible, even if we recommend the inherited widget approach, especially if we provide hooks to configure widgets via parameters to override the inherited widget logic. (Indeed doing this would also enable the explicit argument version, though that seems less useful since it does not solve any problems that the other solutions don't solve better.) This suggests a hybrid approach, where we build widgets that by default are configured by inherited widgets, but allow for widget set creators to provide variants as new classes.
+Summary
+The hybrid approach, with an emphasis on inherited widgets unless dedicated new widgets are particularly well suited (e.g. when there is more to customize than can be done just by replacing the default decoration), seems like the optimal choice.
+
+
+	Subclass
+	Composition
+	Inherited
+Widget
+	Explicit arguments
+	Hybrid
+	Boilerplate for widget set creator
+	High
+	High
+	Minimal
+	Minimal
+	Usually minimal
+	Boilerplate for app developer
+	Low
+	Low
+	Low
+	Extreme
+	Low
+	Ease of migration between widget sets
+	Difficult
+	Difficult
+	Trivial
+	Frustrating
+	Usually trivial
+	Ease of use of widget variants
+	New widgets
+	New widgets
+	Tags
+	Verbose
+	Tags or new widgets
+	
+
+Defaults
+To reduce the cost of creating a widget set, the constructor for the object that represents the customizations could take some decorations for basic building blocks, like "box" and "handle", which it would use by default for widgets that are not otherwise customized. To make this more practical, state data could be wrapped into objects that inherit from a common base class that has features like "enabled", "focused", "hovered", and "active" that apply to most controls.
+Coverage
+The list of controls provided by the libraries mentioned in the background section provides a useful starting point for determining the controls for which to provide templates.
+These fall into several categories.
+Each control can be thought of as a combination of customizations from the widget set creator, and inputs from the application developer. For example, a button's color may be decided by the widget set creator, while its label is decided by the application developer. How these are combined is a decision that the "blankcanvas" package must make. For example, buttons may be built to always use the customization color as the background for the input label. In addition, any decoration or typographic customization used would be provided a state description for the widget (e.g. for a checkbox, whether or not it is checked, among other things listed earlier). States often reflect the inputs (e.g. whether a checkbox is checked is both an input and a state), supplemented with additional information (such as whether the control is focused).
+In the discussion below it is assumed that all decorations are provided with a TickerProvider so that they can trigger their own animations.
+Non-interactive controls
+These controls are self-contained, non-interactive, and have a fixed size or trivially adapt their size to a child widget. Configuring these widgets requires at most specifying dimensions, decorations, shapes, colors, or typographical choices.
+Avatar
+Represents a user account. Typically a circle with a user's profile picture or initials.
+Inputs: Label (initials), optional image.
+Customizations: Decoration, default size, aspect ratio.
+States: The label and image.
+The decoration is rendered at the given aspect ratio, with the given size as the default size.
+The label is provided to the decoration, which is then responsible for typographic concerns, so typography is not a customization.
+Badge
+Indicates unread notifications or other new available content.
+Inputs: A child widget, the badge label (e.g. a number).
+Customizations: Decoration.
+States: The badge label.
+The decoration is rendered over the widget.
+In principle, the alignment of the decoration over the widget could be separately customized, but the API is simpler if the responsibility for aligning the badge decoration belongs entirely to the decoration.
+The label is provided to the decoration, which is then responsible for typographic concerns, so typography is not a customization.
+Card / Container
+A box or other visual means of segregating content.
+Inputs: Child widget.
+Customizations: Decoration.
+States: None.
+This is basically the same widget as a badge, from the perspective of the customization package, but even simpler as it lacks the badge label!
+Divider
+A means of separating groups of content.
+Inputs: None.
+Customizations: Decoration, one dimension.
+States: None.
+For completeness, this could be a horizontal divider and a vertical divider.
+Grid Tile
+A predefined layout for consistent presentation of content in a grid.
+Inputs: Various widgets: a title and subtitle, metadata, actions, icons.
+Customizations: Decoration, typography for each widget.
+States: The presence or absence of each child widget.
+There's an interesting question of whether the layout itself should be customizable. It's certainly a more opinionated part of the widget than most.
+Header
+A predefined layout for consistent presentation of route headers.
+Inputs: Various widgets: title, buttons, actions.
+Customizations: Decoration, typography for title.
+States: None.
+Header (Scrolling)
+A predefined layout for consistent presentation of route headers.
+Inputs: Various widgets: title, buttons, actions.
+Customizations: Decoration, typography for title.
+States: None.
+There are many possible variants here, e.g. big toolbars that collapse when scrolled, floating toolbars, and pinned toolbars. This will be the floating variant.
+List Tile
+A predefined layout for consistent presentation of content in a list.
+Inputs: Various widgets: title, subtitle, leading, trailing.
+Customizations: Decoration, typography for each widget.
+States: The presence or absence of each child widget.
+As with Grid Tile, it might make sense to make the layout customizable too.
+Progress Indicator
+An indicator that reports progress in a task. Can exist in determinate and indeterminate forms. Determinate progress indicators have a current value relative to a maximum. Indeterminate progress indicators 
+Inputs: Optionally, a current value and maximum value.
+Customizations: Decoration, preferred dimensions.
+States: The current and maximum values, if any.
+It may be reasonable for the default widget set to provide widgets for both elongated and square indicators (corresponding to the commonly provided progress bars and progress spinners, respectively).
+Controls with a direct interaction
+These controls are self-contained, trivially interactive (e.g. only reacting to a tap or activate action), and have a fixed size or trivially adapt their size to a child widget. Configuring these widgets still requires at most specifying dimensions, decorations, shapes, colors, or typographical choices.
+Buttons
+Inputs: Contents (widget), activation handler (callback, can be null).
+Customizations: Decoration, typography, optionally default dimensions.
+States: Enabled, hovered, focused, activated.
+Interactivity: Activating the control triggers the activation handler.
+Whether the control is enabled is determined by the presence of a non-null activation handler callback.
+Checkbox
+Inputs: Checked (true, false, null), whether null is valid, toggle handler (callback, can be null).
+Customizations: Decoration, default dimensions.
+States: Enabled, hovered, focused, activated, checked.
+Interactivity: Activating the control triggers the toggle handler.
+The cycle order when null is a valid value (checked -> unchecked -> null -> checked, or checked -> null -> unchecked -> checked) is hard-coded.
+Whether the control is enabled is determined by the presence of a non-null toggle handler callback.
+Menu Items (for Popup Menus)
+Inputs: Contents (widget), value (can be null).
+Customizations: Decoration, typography, default dimensions.
+States: Enabled, hovered, focused, activated.
+Interactivity: Activating the control dismisses the route with the given value.
+If the value is null, the item is disabled.
+Other variants of menu items could be provided, e.g. toggle items, radio items, groups, etc. This will be a simple label action item.
+Radio Button
+Inputs: Current value, radio button's value, toggle handler (callback, can be null).
+Customizations: Decoration, default dimensions.
+States: Enabled, hovered, focused, activated, selected.
+Interactivity: Activating the control triggers the toggle handler (with the radio button's value).
+Whether the control is enabled is determined by the presence of a non-null toggle handler callback.
+Tooltips
+Inputs: Child widget, text.
+Customizations: decoration, typography.
+States: Visibility, position of widget relative to tooltip.
+Interactivity: When the child widget is hovered or long-pressed, the visibility is toggled. The tooltip's visibility expires on a timer.
+The tooltip is positioned (in the overlay or a separate view) relative to the widget to which it applies; the relative position is given as one of the states.
+Controls with multiple interactions
+These controls are self-contained and have a fixed size or trivially adapt their size to a child widget, but their interaction model is slightly more involved than a single tap. For example, they may have multiple focusable regions internally or may need to support drags. Despite these complications, configuring these widgets again requires at most specifying dimensions, decorations, shapes, colors, or typographical choices.
+Page Indicator
+A means of orienting the user in the context of paginated scrolling. May be interactive.
+Inputs: Page count, current page index, page selection handler (callback, can be null).
+Customizations: Decoration, height, width per page.
+States: Page count, current page index, which page indicators are focused, hovered, or active (if interactive).
+Interactivity: The page indicators can be individually focused and activated. Doing so triggers the page selection handler callback.
+The control is interactive if there is a non-null page selection handler.
+The decoration must implement an interface that reports the position of each page indicator, and that converts points to page indices.
+Ratings
+Allows for a selection from 1 to 5, e.g. for rating a product or service.
+Inputs: Current rating, value change handler (callback, can be null).
+Customizations: Decoration, dimensions.
+States: Current rating, which rating symbols are focused, hovered, or active (if interactive).
+Interactivity: The rating symbols can be individually focused and activated. Doing so triggers the value change handler callback.
+The control is interactive if there is a non-null value change handler.
+The decoration must implement an interface that reports the position of each rating symbol, and that converts points to ratings.
+Slider
+Inputs: Minimum value, maximum value, current value, map of values to labels for tick marks, minimum step, value change handler (callback, can be null).
+Customizations: Decoration, default dimensions.
+States: Minimum value, maximum value, current value, map of values to labels for tick marks, minimum step, focused, enabled. Hovered value (if any, and if enabled), active value (if any, and if enabled).
+Interactivity: Hovering and activating the control causes the value change handler to be invoked using the value obtained via the hit testing API on the decoration.
+The decoration must implement an interface that converts points to values based on the current state.
+Whether the control is enabled is determined by the presence of a non-null value change handler callback.
+Switch
+A checkbox that is presented as a draggable widget.
+Inputs: Checked, toggle handler (callback, can be null).
+Customizations: Decoration, default dimensions.
+States: Enabled, hovered, focused, activated, current value, current delta if dragging.
+Interactivity: Activating the control triggers the toggle handler. Dragging the thumb sets the current value to the value determined via the Decoration's API.
+Whether the control is enabled is determined by the presence of a non-null toggle handler callback.
+The Decoration must implement an interface that indicates whether a point is on the thumb or not, and an interface that converts a delta to a value.
+Non-trivial controls
+These controls have elaborate requirements that may require more configuration than the previous categories, or require non-trivial integration with Flutter features such as navigation, restoration, slivers (scrolling), or text editing, or require providing non-trivial imperative APIs, or involve elaborate interactions that may be difficult to entirely implement using decorations.
+The Bottom Bar, Segmented Control, and Tabs are essentially the same as each other, with different decorations.
+Bottom Bar
+A horizontal single-item list box.
+Inputs: A list of value, widget tuples. Current value. Value change handler (callback, can be null).
+Customizations: Decoration for each item.
+States: For each value: the number of values, the index of this value, the index of the selected value, enabled, focused, hovered, activated.
+Interactivity: Activating an item triggers the value change handler.
+Combo Box
+A single-line text editing control combined with a button that activates to show a menu of options.
+Inputs: List of value/widget/enabled tuples, current value, value change handler (callback, can be null).
+Customizations: Decoration and typography for text field and button, decoration for popup, decoration and typography for items.
+States: For button: openness, enabled, focused, hovered, active. For popup: openness. For items: enabled, focused, hovered, active, selected.
+Interactivity: Text editing implemented by widgets library EditableText. Button can be activated to open the menu (new route). Menu items can be focused, selected.
+Enabled state for text field and button is determined by value change handler being non-null.
+Dialogs
+A page route that overlays existing content in a modal fashion.
+Inputs: Widget contents.
+Customizations: Decoration.
+States: Visibility.
+Interactivity: Potentially, clicking behind the dialog could dismiss it.
+The bulk of the complexity here lies in the coordination with navigation and restoration logic, and is actually implemented by the widgets library.
+Disclosure
+A button that shows or hides more content.
+Inputs: Header widget, body widget, initial openness.
+Customizations: Decoration, typography, default height dimension.
+States: Openness.
+Interactivity: Tapping the header toggles the openness state.
+Drawer
+Navigation menu that can be pulled from the screen edge (on small displays) or that sticks to the screen edge (on larger screens).
+Inputs: Contents of drawer (widget), main page (widget).
+Customizations: Decoration for drawer, decoration for scrim, default width.
+States: Openness.
+Interactivity: Dragging in/out. Tapping scrim to close.
+Drawer should also offer an imperative API to enable programmatic opening/closing.
+Dropdown
+Button that activates to show a menu of options.
+Inputs: List of value/widget/enabled tuples, current value, value change handler (callback, can be null).
+Customizations: Decoration and typography for button, decoration for popup, decoration and typography for items.
+States: For button: openness, enabled, focused, hovered, active. For popup: openness. For items: enabled, focused, hovered, active, selected.
+Interactivity: Button can be activated to open the menu (new route). Menu items can be focused, selected.
+Enabled state for button is determined by value change handler being non-null.
+List Box
+Single-select or multi-select scrollable widget.
+Inputs: List of value, widget (or builder), enabled, selected tuples. Mode (single select vs multiselect). Value change handler (callback, can be null).
+Customizations: Decoration for list box, decoration and typography for items.
+States: Mode, enabled, focused, hovered for list box. Mode, enabled, focused, hovered, activated, selected for items.
+Interactivity: List can be scrolled, focus can be moved from item to item, items can be selected. In single-select mode, the value change handler always gets a set with exactly one value. In multi-select mode, it gets a set with the selected values (zero or more).
+The list box is enabled if the value change handler is non-null. When disabled, it cannot be focused or scrolled.
+Popup Menu
+A page route that displays a list of widgets.
+Inputs: List of widgets, typically menu items, which dismiss the route with a result.
+Customizations: Decoration, typography.
+States: Visibility.
+Interactivity: Menu can be dismissed.
+Most of the logic of a menu comes from the menu items themselves.
+Reorderable List
+Scrollable widget where the items can be ordered.
+Inputs: List of value, widget (or builder) tuples. Value change handler (callback, can be null).
+Customizations: Decoration for container, decoration and typography for items.
+States: Enabled, focused, hovered for list box. Focused, hovered, activated, moving for items.
+Interactivity: Activating an item starts reordering it (via ReorderableList).
+Enabled state is determined by value change handler being non-null.
+Scroll Bar
+Indicates a scroll position, and allows it to be moved.
+Inputs: None.
+Customizations: Decoration, default cross-axis dimension.
+States: List view hovered, list view scrolling, scroll bar hovered, scroll bar active, scroll metrics, axis direction.
+Interactivity: Can be dragged to move the scroll position.
+The decoration must implement an interface that allows for more elaborate hit testing (e.g. whether a point is on the thumb vs on the track).
+Segmented Control
+A horizontal single-item list box.
+Inputs: A list of value, widget tuples. Current value. Value change handler (callback, can be null).
+Customizations: Decoration for each item.
+States: For each value: the number of values, the index of this value, the index of the selected value, enabled, focused, hovered, activated.
+Interactivity: Activating an item triggers the value change handler.
+Enabled state is determined by value change handler being non-null.
+Tabs
+A horizontal single-item list box. Scrollable if the items overflow available space.
+Inputs: A list of value, widget tuples. Current value. Value change handler (callback, can be null).
+Customizations: Decoration for each item.
+States: For each value: the number of values, the index of this value, the index of the selected value, enabled, focused, hovered, activated.
+Interactivity: Activating an item triggers the value change handler.
+Enabled state is determined by value change handler being non-null.
+Text Field
+Single-line text editing control.
+Inputs: Value. Widgets for placeholder, prefix, suffix. Text editing controller.
+Customizations: Decoration, typography for value, typography for placeholder, typography for prefix and suffix.
+States: Enabled, focused, hovered.
+Interactivity: Implemented by widgets library EditableText.
+Enabled state is determined by the text editing controller being non-null.
+Tree View
+Scrollable view that represents a tree structure. Branches can be opened or closed.
+Inputs: 
+Customizations: 
+States: 
+Interactivity: 
+Notification Popup
+A toast, snackbar, or similar transient message.
+Inputs: Child widget.
+Customizations: Decoration.
+States: Visibility.
+Interactivity: Can be dismissed.
+Self-dismisses after a timer.
+Sheets
+A variant of a dialog box (i.e. a modal page route) that is anchored to an existing window.
+Inputs: Widget contents.
+Customizations: Decoration.
+States: Visibility.
+Interactivity: Potentially, clicking behind the sheet could dismiss it.
+Splitter
+A vertical or horizontal divider that allows widgets on either side to be resized.
+Inputs: 
+Customizations: 
+States: 
+Interactivity: 
+Composite controls
+These controls are typically constructed by composing other controls together, and it is their construction that may require customization by different widget sets, rather than merely their dimensions, decorations, colors, or typography.
+About box
+A dialog box with predetermined text that shows the application's credits and links to the license page.
+Inputs: Application name, version, and other metadata.
+Construction: A dialog box and buttons.
+Color Picker
+A button that triggers a dialog box that allows for a color to be selected.
+Inputs: Color value, value change handler (callback, can be null).
+Construction: A button, a dialog box, sliders, etc.
+There are many variants of color pickers. This is a simple control based on using RGBA sliders.
+Date/Time Pickers
+A button that triggers a dialog box that allows for a date or time to be selected.
+Inputs: Current value, value change handler (callback, can be null).
+Construction: A button, a dialog box, spinners, etc.
+There are many variants of date and time pickers. This is a simple control based on using spinners.
+License Page
+A route that shows the application's license information.
+Inputs: None.
+Construction: Various widgets.
+Search Field
+A text field with a clear button.
+Inputs: Current value, value change handler (callback, can be null).
+Construction: Text field with a button for clearing the text field.
+The text field and button are configured with the "search" tag by default if no tag is given to the search field.
+Spinner
+A control for changing a numeric value.
+Inputs: Current value, value change handler (callback, can be null), delta.
+Construction: Text field with two vertically-stacked buttons as the suffix for increment and decrement.
+For accessibility, the semantics of the spinner explicitly provide for increment and decrement.
+The text field and buttons are configured with the "spinner" tag by default if no tag is given to the spinner itself.
+Table
+Scrollable view that represents 2D data.
+Inputs: 
+Customizations: 
+States: 
+Interactivity: 
+Layouts
+One of the types of widgets not widely provided by the existing widget sets but useful nonetheless is default layouts, so that developers don't need to precisely position each button. Some layout widgets are common, e.g. ListTile, but others are less common, e.g. the Material library's Scaffold and ButtonBar widgets.
+These layouts have no state or interactivity, and do not render any pixels of their own.
+Button Layout
+A set of end-aligned widgets.
+Inputs: the body widget, and a list of button widgets.
+Customizations: The spacing between widgets.
+The body fills available space, with a row below it with end-aligned widgets separated from each other, from the body, and from the other edges by the given spacing.
+Describing customizations
+Consider a control with several states, whose customizations involve decorations, typography, dimensions. Since the set of states may grow from one version to another, rather than representing them as arguments to the decoration class' constructor, they should be wrapped into a single class that is then passed to the constructor.
+API strawman
+The following pseudo-code shows a possible approach that puts together the ideas put forth so far. It comes in three parts, the first is what the "blankcanvas" package might look like at some level, the second shows how a widget set might use this, and the third shows how an app might use the widget set. For simplicity, this only shows a single control, a Foo control, being customized.
+// In the "blankcanvas" package
+// How to represent the state of a Foo control.
+class FooControlStatus[3] {
+ final double enabled; // "animated bool"
+ final double focused; // "animated bool"
+ final double value;
+ // ...
+}
+// How to represent the customizations of a Foo control.
+class FooControlCustomization {
+ const FooControlCustomization({
+   required this.decoration,
+   this.textStyle = const TextStyle(),
+   this.width = 32.0,
+   this.aspectRatio = 1.0,
+ });
+ final Decoration Function(ControlState) decoration;
+ final TextStyle Function(ControlState) textStyle;
+ final double width;
+ final double aspectRatio;
+}
+// This class is injected via CustomizedApp to provide the
+// theming for all custom controls.
+class ControlCustomizations {
+ const ControlCustomizations({
+   required this.fooControls,
+   // ...
+ });
+ final Map<String?, FooControlCustomization> fooControls;
+ // ...
+}
+// A custom control.
+class Foo extends StatelessWidget {
+ Foo({ super.key, this.value, this.tag, /* ... */ });
+ final int value;
+ final String? tag;
+ // ...
+ // build method fetches the inherited ControlCustomizations,
+ // looks up the right FooControlCustomization, and uses an
+ // AnimatedDecoration or similar to paint itself.
+}
+// Parallel to MaterialApp, introduce navigation primitives etc
+class CustomizedApp extends StatelessApp {
+ // ...
+}
+// In a package creating a widget set
+class FooDecoration extends Decoration {
+ const FooDecoration(this.status);
+ final FooControlStatus status;
+ // ...
+}
+TextStyle fooTextStyleBuilder(FooControlStatus status) {
+ // ...
+}
+// Configures all the customizations.
+class QuuxApp extends StatelessWidget {
+ const QuuxApp({super.key, this.child});
+ final Widget child;
+ @override
+ Widget build(BuildContext context) {
+   return CustomizedApp(
+     customizations: ControlCustomizations(
+       fooControls: <String?, FooControlCustomization>{
+         null: FooControlCustomization(
+           decoration: FooDecoration.new,
+           textStyle: fooTextStyleBuilder,
+           width: 64.0,
+         ),
+       },
+       child: child,
+     ),
+   );
+ }
+}
+// In an app using the package set
+void main() {
+ runApp(QuuxApp(child: Foo()));
+}
+Diagrams
+A theme is a mapping of widget types to mappings of tags to factories.
+  
+
+The factories are callbacks that are specialized for each widget type, that take a corresponding Status object and generate a corresponding Customization object, which itself typically contains one or more corresponding Decoration objects. The Decoration objects typically keep a reference to the Status object.
+  
+
+These Decoration objects are then used with an AnimatedContainer, which lerps the given Decorations (based on the Status objects passed to the factories as discussed above) to generate intermediate Decorations.
+Lerping these Decorations typically involves lerping the Status objects themselves.
+  
+
+Default style
+For testing purposes and to provide a starting point for developers building widget sets with the "blankcanvas" package, this widget set will come with a very basic set of default decorations and typography. The default will consist of showing construction lines when debugPaintSize is enabled, and black-on-white with stark black borders otherwise.
+Testing
+The "blankcanvas" package will have unit tests for each widget.
+Since the purpose of the package is specifically to help people create new widget sets by creating visuals, those widget sets should primarily be tested by goldens. A framework will be provided to test sequences for each widget, taking screenshots at appropriate times, creating "sprite sheets" showing sequences in one image, for easier verification (maybe using AnimationSheetBuilder).
+Documentation
+Code samples in API docs is the primary means by which the "blankcanvas" package will be documented.
+Usage examples
+...
+
+
+
+
+PUBLICLY SHARED
+________________
+[1] This was created by Google, though it is not a formal part of the Flutter SDK.
+[2] Declares a dependency on Cupertino in one file but doesn't seem to use it.
+[3] The use of "Status" rather than "State" is to reduce confusion with State<T> in the widgets package. Documentation would use the term "Status" everywhere rather than "State".
