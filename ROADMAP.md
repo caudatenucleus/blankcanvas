@@ -50,30 +50,35 @@ This document outlines the development status and future plans for the BlankCanv
 - [x] **Layout Migration**: `LayoutBox` and `FlexBox` implemented as low-level `RenderObject`s.
 - [x] **Input Migration**: `Button`, `TextField`, `Checkbox`, `Radio`, `Switch`, `Slider`, `ProgressIndicator` all migrated to raw `RenderObject`s.
 
+### High-Level UI Primitives (Phase 19)
+- [x] **ListTile**: Row primitive with leading/trailing slots.
+- [x] **Avatar**: User imagery with status indicators.
+- [x] **SearchField**: TextField with clear/search buttons.
+- [x] **PageIndicator**: Dot-based pagination indicator.
+- [x] **NotificationPopup**: Toast/SnackBar overlay system.
+
+### Theming Ecosystem (Phase 20)
+- [x] **defaultDarkTheme()**: Dark mode preset (blue accent on gray).
+- [x] **materialLikeTheme()**: Material Design-inspired (purple accent, pill buttons).
+- [x] **highContrastTheme()**: Accessibility preset (yellow on black).
+
+### Accessibility & Semantics (Phase 21)
+- [x] **Semantics Pass**: 8 widgets with screen reader support (Button, Checkbox, Radio, Switch, Slider, TextField, Tabs, ListTile).
 
 ---
 
 ## 🚧 In Progress / Next Up
 
 ### Expansion
-- [ ] **High-Level UI Primitives**: `ListTile`, `SearchField`, `Avatar`, `PageIndicator`.
-- [ ] **Notification System**: SnackBar/Toast equivalents.
 - [ ] **Header (Scrolling)**: Sliver-based headers for advanced scrolling.
-
-
-### Theming
-- [ ] **Dark Mode Generic Preset**: A `defaultDarkTheme()` factory.
-- [ ] **High Contrast Preset**: For accessibility.
-- [ ] **Material-Like Preset**: A theme that mimics Material Design (to show flexibility).
 
 ### DX & Tooling
 - [ ] **Theme Builder**: A visual tool or CLI to generate theme code.
-- [ ] **Hot Reload Support**: Ensure all customizations update cleanly on hot reload (mostly done, verify edge cases).
+- [ ] **Hot Reload Support**: Verify edge cases for customization updates.
 
 ## 🔮 Future / Planned
 
-### accessibility
-- [ ] **Semantics Audit**: Ensure all custom widgets correctly report Semantics to screen readers.
+### Accessibility
 - [ ] **Keyboard Navigation**: Full arrow-key support for Menus, Grids, and Pickers.
 
 ### Testing
@@ -83,3 +88,4 @@ This document outlines the development status and future plans for the BlankCanv
 ### Documentation
 - [ ] **Widget Catalog**: A visual storybook-style gallery app.
 - [ ] **Migration Guide**: Helping users move from Material widgets.
+
