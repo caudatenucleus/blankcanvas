@@ -89,25 +89,30 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
     final decoration = customization.decoration(_status);
     final textStyle = customization.textStyle(_status);
 
-    return MouseRegion(
-      onEnter: (_) => _hoverController.forward(),
-      onExit: (_) => _hoverController.reverse(),
-      cursor: widget.onPressed != null
-          ? SystemMouseCursors.click
-          : SystemMouseCursors.basic,
-      child: GestureDetector(
-        onTap: widget.onPressed,
-        child: Focus(
-          focusNode: _focusNode,
-          child: _ButtonRenderWidget(
-            decoration: decoration is BoxDecoration
-                ? decoration
-                : const BoxDecoration(),
-            width: customization.width,
-            height: customization.height,
-            child: DefaultTextStyle(
-              style: textStyle,
-              child: Center(child: widget.child),
+    return Semantics(
+      button: true,
+      enabled: widget.onPressed != null,
+      onTap: widget.onPressed,
+      child: MouseRegion(
+        onEnter: (_) => _hoverController.forward(),
+        onExit: (_) => _hoverController.reverse(),
+        cursor: widget.onPressed != null
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.basic,
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          child: Focus(
+            focusNode: _focusNode,
+            child: _ButtonRenderWidget(
+              decoration: decoration is BoxDecoration
+                  ? decoration
+                  : const BoxDecoration(),
+              width: customization.width,
+              height: customization.height,
+              child: DefaultTextStyle(
+                style: textStyle,
+                child: Center(child: widget.child),
+              ),
             ),
           ),
         ),

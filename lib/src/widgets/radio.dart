@@ -126,21 +126,27 @@ class _RadioState<T> extends State<Radio<T>> with TickerProviderStateMixin {
     final decoration = customization.decoration(_status);
     final double sizeValue = customization.size ?? 18.0;
 
-    return MouseRegion(
-      onEnter: (_) => _hoverController.forward(),
-      onExit: (_) => _hoverController.reverse(),
-      cursor: widget.onChanged != null
-          ? SystemMouseCursors.click
-          : SystemMouseCursors.basic,
-      child: GestureDetector(
-        onTap: _handleTap,
-        child: Focus(
-          focusNode: _focusNode,
-          child: _RadioRenderWidget(
-            decoration: decoration is BoxDecoration
-                ? decoration
-                : const BoxDecoration(shape: BoxShape.circle),
-            sizeValue: sizeValue,
+    return Semantics(
+      inMutuallyExclusiveGroup: true,
+      selected: widget.value == widget.groupValue,
+      enabled: widget.onChanged != null,
+      onTap: _handleTap,
+      child: MouseRegion(
+        onEnter: (_) => _hoverController.forward(),
+        onExit: (_) => _hoverController.reverse(),
+        cursor: widget.onChanged != null
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.basic,
+        child: GestureDetector(
+          onTap: _handleTap,
+          child: Focus(
+            focusNode: _focusNode,
+            child: _RadioRenderWidget(
+              decoration: decoration is BoxDecoration
+                  ? decoration
+                  : const BoxDecoration(shape: BoxShape.circle),
+              sizeValue: sizeValue,
+            ),
           ),
         ),
       ),

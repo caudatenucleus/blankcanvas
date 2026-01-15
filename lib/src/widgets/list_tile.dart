@@ -33,17 +33,22 @@ class ListTile extends StatelessWidget {
     final status = MutableControlStatus();
     final decoration = customization.decoration(status);
 
-    return _ListTileContainerRenderWidget(
-      decoration: decoration is BoxDecoration
-          ? decoration
-          : const BoxDecoration(),
+    return Semantics(
+      button: onTap != null,
+      enabled: onTap != null,
       onTap: onTap,
-      child: _ListTileRenderWidget(
-        title: title,
-        subtitle: subtitle,
-        leading: leading,
-        trailing: trailing,
-        customization: customization,
+      child: _ListTileContainerRenderWidget(
+        decoration: decoration is BoxDecoration
+            ? decoration
+            : const BoxDecoration(),
+        onTap: onTap,
+        child: _ListTileRenderWidget(
+          title: title,
+          subtitle: subtitle,
+          leading: leading,
+          trailing: trailing,
+          customization: customization,
+        ),
       ),
     );
   }

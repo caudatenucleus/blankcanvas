@@ -139,18 +139,23 @@ class _TextFieldState extends State<TextField>
         customizations.getTextField(widget.tag) ??
         TextFieldCustomization.simple();
 
-    return MouseRegion(
-      onEnter: (_) => _hoverController.forward(),
-      onExit: (_) => _hoverController.reverse(),
-      cursor: SystemMouseCursors.text,
-      child: GestureDetector(
-        onTap: () => _focusNode.requestFocus(),
-        child: _TextFieldRenderWidget(
-          value: _controller.value,
-          placeholder: widget.placeholder,
-          status: _status,
-          customization: customization,
-          focusNode: _focusNode,
+    return Semantics(
+      textField: true,
+      label: widget.placeholder,
+      value: _controller.text,
+      child: MouseRegion(
+        onEnter: (_) => _hoverController.forward(),
+        onExit: (_) => _hoverController.reverse(),
+        cursor: SystemMouseCursors.text,
+        child: GestureDetector(
+          onTap: () => _focusNode.requestFocus(),
+          child: _TextFieldRenderWidget(
+            value: _controller.value,
+            placeholder: widget.placeholder,
+            status: _status,
+            customization: customization,
+            focusNode: _focusNode,
+          ),
         ),
       ),
     );

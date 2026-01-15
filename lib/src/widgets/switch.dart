@@ -120,22 +120,27 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
     final double width = customization.width ?? 40.0;
     final double height = customization.height ?? 20.0;
 
-    return MouseRegion(
-      onEnter: (_) => _hoverController.forward(),
-      onExit: (_) => _hoverController.reverse(),
-      cursor: widget.onChanged != null
-          ? SystemMouseCursors.click
-          : SystemMouseCursors.basic,
-      child: GestureDetector(
-        onTap: _handleTap,
-        child: Focus(
-          focusNode: _focusNode,
-          child: _SwitchRenderWidget(
-            decoration: decoration is BoxDecoration
-                ? decoration
-                : const BoxDecoration(),
-            width: width,
-            height: height,
+    return Semantics(
+      toggled: widget.value,
+      enabled: widget.onChanged != null,
+      onTap: _handleTap,
+      child: MouseRegion(
+        onEnter: (_) => _hoverController.forward(),
+        onExit: (_) => _hoverController.reverse(),
+        cursor: widget.onChanged != null
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.basic,
+        child: GestureDetector(
+          onTap: _handleTap,
+          child: Focus(
+            focusNode: _focusNode,
+            child: _SwitchRenderWidget(
+              decoration: decoration is BoxDecoration
+                  ? decoration
+                  : const BoxDecoration(),
+              width: width,
+              height: height,
+            ),
           ),
         ),
       ),

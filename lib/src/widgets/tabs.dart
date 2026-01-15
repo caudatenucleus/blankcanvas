@@ -121,20 +121,25 @@ class _TabItemState<T> extends State<_TabItem<T>>
       child = Text("${widget.item}");
     }
 
-    return MouseRegion(
-      onEnter: (_) => _hoverController.forward(),
-      onExit: (_) => _hoverController.reverse(),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () => widget.onChanged(widget.item),
-        child: _TabRenderWidget(
-          decoration: decoration is BoxDecoration
-              ? decoration
-              : const BoxDecoration(),
-          padding:
-              widget.customization?.padding ??
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: DefaultTextStyle(style: textStyle, child: child),
+    return Semantics(
+      selected: widget.isSelected,
+      button: true,
+      onTap: () => widget.onChanged(widget.item),
+      child: MouseRegion(
+        onEnter: (_) => _hoverController.forward(),
+        onExit: (_) => _hoverController.reverse(),
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () => widget.onChanged(widget.item),
+          child: _TabRenderWidget(
+            decoration: decoration is BoxDecoration
+                ? decoration
+                : const BoxDecoration(),
+            padding:
+                widget.customization?.padding ??
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: DefaultTextStyle(style: textStyle, child: child),
+          ),
         ),
       ),
     );

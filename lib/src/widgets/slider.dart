@@ -139,31 +139,37 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
     final decoration = customization.decoration(_status);
     final double trackHeight = customization.trackHeight ?? 24.0;
 
-    return MouseRegion(
-      onEnter: (_) => _hoverController.forward(),
-      onExit: (_) => _hoverController.reverse(),
-      cursor: widget.onChanged != null
-          ? SystemMouseCursors.click
-          : SystemMouseCursors.basic,
-      child: GestureDetector(
-        onHorizontalDragStart: (_) {
-          _dragController.forward();
-          _focusNode.requestFocus();
-        },
-        onHorizontalDragUpdate: (d) => _handleDragUpdate(d.localPosition),
-        onHorizontalDragEnd: (_) => _dragController.reverse(),
-        onTapUp: (d) {
-          _handleDragUpdate(d.localPosition);
-          _focusNode.requestFocus();
-        },
-        child: Focus(
-          focusNode: _focusNode,
-          child: _SliderRenderWidget(
-            key: _renderKey,
-            decoration: decoration is BoxDecoration
-                ? decoration
-                : const BoxDecoration(),
-            trackHeight: trackHeight,
+    return Semantics(
+      slider: true,
+      value:
+          '${((widget.value - widget.min) / (widget.max - widget.min) * 100).round()}%',
+      enabled: widget.onChanged != null,
+      child: MouseRegion(
+        onEnter: (_) => _hoverController.forward(),
+        onExit: (_) => _hoverController.reverse(),
+        cursor: widget.onChanged != null
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.basic,
+        child: GestureDetector(
+          onHorizontalDragStart: (_) {
+            _dragController.forward();
+            _focusNode.requestFocus();
+          },
+          onHorizontalDragUpdate: (d) => _handleDragUpdate(d.localPosition),
+          onHorizontalDragEnd: (_) => _dragController.reverse(),
+          onTapUp: (d) {
+            _handleDragUpdate(d.localPosition);
+            _focusNode.requestFocus();
+          },
+          child: Focus(
+            focusNode: _focusNode,
+            child: _SliderRenderWidget(
+              key: _renderKey,
+              decoration: decoration is BoxDecoration
+                  ? decoration
+                  : const BoxDecoration(),
+              trackHeight: trackHeight,
+            ),
           ),
         ),
       ),
