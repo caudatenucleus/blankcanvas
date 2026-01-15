@@ -31,3 +31,7 @@ export 'src/widgets/avatar.dart';
 export 'src/widgets/search_field.dart';
 export 'src/widgets/page_indicator.dart';
 export 'src/widgets/notification_popup.dart';
+export 'src/widgets/carousel.dart';
+export 'src/widgets/chip.dart';
+export 'src/widgets/segmented_button.dart';
+export 'src/widgets/sliver_header.dart';
