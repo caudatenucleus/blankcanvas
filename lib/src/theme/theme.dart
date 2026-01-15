@@ -10,6 +10,9 @@ class ControlCustomizations {
     this.radios = const {},
     this.switches = const {},
     this.sliders = const {},
+    this.cards = const {},
+    this.progressIndicators = const {},
+    this.dialogs = const {},
   });
 
   /// Map of button tags to their customization. Null key is the default.
@@ -23,6 +26,10 @@ class ControlCustomizations {
   final Map<String?, SwitchCustomization> switches;
   final Map<String?, SliderCustomization> sliders;
 
+  final Map<String?, CardCustomization> cards;
+  final Map<String?, ProgressCustomization> progressIndicators;
+  final Map<String?, DialogCustomization> dialogs;
+
   ButtonCustomization? getButton(String? tag) => buttons[tag] ?? buttons[null];
   TextFieldCustomization? getTextField(String? tag) =>
       textFields[tag] ?? textFields[null];
@@ -32,6 +39,10 @@ class ControlCustomizations {
   SwitchCustomization? getSwitch(String? tag) =>
       switches[tag] ?? switches[null];
   SliderCustomization? getSlider(String? tag) => sliders[tag] ?? sliders[null];
+  CardCustomization? getCard(String? tag) => cards[tag] ?? cards[null];
+  ProgressCustomization? getProgressIndicator(String? tag) =>
+      progressIndicators[tag] ?? progressIndicators[null];
+  DialogCustomization? getDialog(String? tag) => dialogs[tag] ?? dialogs[null];
 }
 
 /// An [InheritedWidget] that provides [ControlCustomizations] to its descendants.

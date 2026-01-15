@@ -84,3 +84,33 @@ class SliderCustomization extends ControlCustomization<SliderControlStatus> {
   final double? trackHeight;
   final double? thumbSize;
 }
+
+/// Customization for Progress Indicators.
+class ProgressCustomization
+    extends ControlCustomization<ProgressControlStatus> {
+  const ProgressCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.height,
+  });
+  final double? height; // For linear progress
+}
+
+/// Customization for Cards.
+class CardCustomization extends ControlCustomization<CardControlStatus> {
+  const CardCustomization({
+    required super.decoration,
+    required super.textStyle,
+  });
+}
+
+/// Customization for Dialogs.
+class DialogCustomization extends ControlCustomization<CardControlStatus> {
+  const DialogCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.modalBarrierColor,
+  });
+
+  final Color? modalBarrierColor;
+}

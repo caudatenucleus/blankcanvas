@@ -277,55 +277,87 @@ class _SettingsPageState extends State<SettingsPage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Checkbox(
-                  value: _notifications,
-                  onChanged: (v) => setState(() => _notifications = v),
+            // Let's wrap controls in a Card
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _notifications,
+                          onChanged: (v) => setState(() => _notifications = v),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text('Enable Notifications'),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Switch(
+                          value: _darkMode,
+                          onChanged: (v) => setState(() => _darkMode = v),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text('Dark Mode'),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Volume'),
+                    Row(
+                      children: [1, 2, 3].map((i) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Row(
+                            children: [
+                              Radio<int>(
+                                value: i,
+                                groupValue: _volume,
+                                onChanged: (v) => setState(() => _volume = v!),
+                              ),
+                              const SizedBox(width: 5),
+                              Text('$i'),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Brightness'),
+                    const SizedBox(height: 10),
+                    Slider(
+                      value: _brightness,
+                      min: 0.0,
+                      max: 1.0,
+                      onChanged: (v) => setState(() => _brightness = v),
+                    ),
+                    const SizedBox(height: 10),
+                    const ProgressIndicator(value: 0.7), // Demo progress
+                  ],
                 ),
-                const SizedBox(width: 10),
-                const Text('Enable Notifications'),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Switch(
-                  value: _darkMode,
-                  onChanged: (v) => setState(() => _darkMode = v),
-                ),
-                const SizedBox(width: 10),
-                const Text('Dark Mode'),
-              ],
+              ),
             ),
             const SizedBox(height: 20),
-            const Text('Volume'),
-            Row(
-              children: [1, 2, 3].map((i) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Row(
-                    children: [
-                      Radio<int>(
-                        value: i,
-                        groupValue: _volume,
-                        onChanged: (v) => setState(() => _volume = v!),
-                      ),
-                      const SizedBox(width: 5),
-                      Text('$i'),
-                    ],
+            Button(
+              onPressed: () {
+                showGeneralDialog(
+                  context: context,
+                  pageBuilder: (context, _, _) => const Dialog(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text("This is a themed dialog!"),
+                    ),
                   ),
+                  barrierColor: const Color(
+                    0x80000000,
+                  ), // Should fetch from theme
+                  barrierDismissible: true,
+                  barrierLabel: 'Dismiss',
                 );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-            const Text('Brightness'),
-            const SizedBox(height: 10),
-            Slider(
-              value: _brightness,
-              min: 0.0,
-              max: 1.0,
-              onChanged: (v) => setState(() => _brightness = v),
+              },
+              child: const Text('Show Dialog'),
             ),
             const SizedBox(height: 20),
             Button(
