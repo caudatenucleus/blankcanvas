@@ -10,7 +10,6 @@ class DemoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define a basic black-and-white theme for the demo
     return CustomizedApp(
       title: 'BlankCanvas Demo',
       customizations: ControlCustomizations(
@@ -71,7 +70,73 @@ class DemoApp extends StatelessWidget {
             textStyle: (status) {
               return const TextStyle(color: Color(0xFF000000), fontSize: 14.0);
             },
-            cursorColor: const Color(0xFF000000),
+          ),
+        },
+        checkboxes: {
+          null: CheckboxCustomization(
+            size: 20.0,
+            decoration: (status) {
+              return BoxDecoration(
+                color: status.checked > 0.5
+                    ? const Color(0xFF000000)
+                    : const Color(0xFFFFFFFF),
+                border: Border.all(color: const Color(0xFF000000)),
+                borderRadius: BorderRadius.circular(2.0),
+              );
+            },
+            textStyle: (status) => const TextStyle(),
+          ),
+        },
+        switches: {
+          null: SwitchCustomization(
+            width: 44.0,
+            height: 24.0,
+            decoration: (status) {
+              // Draw a simple track and thumb
+              // We can't really draw a complex shape with just BoxDecoration,
+              // usually we'd use a CustomPainter in the decoration or just simplified visuals.
+              // Here we just change color for the whole box to represent state.
+              return BoxDecoration(
+                color: status.checked > 0.5
+                    ? const Color(0xFF000000)
+                    : const Color(0xFFCCCCCC),
+                borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(color: const Color(0xFF000000), width: 1.0),
+              );
+            },
+            textStyle: (status) => const TextStyle(),
+          ),
+        },
+        radios: {
+          null: RadioCustomization(
+            size: 20.0,
+            decoration: (status) {
+              return BoxDecoration(
+                shape: BoxShape.circle,
+                color: status.selected > 0.5
+                    ? const Color(0xFF000000)
+                    : const Color(0xFFFFFFFF),
+                border: Border.all(color: const Color(0xFF000000)),
+              );
+            },
+            textStyle: (status) => const TextStyle(),
+          ),
+        },
+        sliders: {
+          null: SliderCustomization(
+            trackHeight: 24.0,
+            decoration: (status) {
+              // We need to visually represent the value.
+              // BoxDecoration gradient is a hacky way to do a progress bar without custom painter.
+              return BoxDecoration(
+                gradient: LinearGradient(
+                  colors: const [Color(0xFF000000), Color(0xFFCCCCCC)],
+                  stops: [status.value, status.value], // Sharp transition
+                ),
+                borderRadius: BorderRadius.circular(4.0),
+              );
+            },
+            textStyle: (status) => const TextStyle(),
           ),
         },
       ),
@@ -160,10 +225,115 @@ class DashboardPage extends StatelessWidget {
           Text('Welcome, $username!', style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 20),
           Button(
+            // Navigate to Settings
+            onPressed: () {
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, _, _) => const SettingsPage(),
+                ),
+              );
+            },
+            child: const Text('Settings'),
+          ),
+          const SizedBox(height: 20),
+          Button(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Log Out'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  bool _notifications = false;
+  bool _darkMode = false;
+  int _volume = 5;
+  double _brightness = 0.5;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        constraints: const BoxConstraints(maxWidth: 400),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFCCCCCC)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Settings',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Checkbox(
+                  value: _notifications,
+                  onChanged: (v) => setState(() => _notifications = v),
+                ),
+                const SizedBox(width: 10),
+                const Text('Enable Notifications'),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Switch(
+                  value: _darkMode,
+                  onChanged: (v) => setState(() => _darkMode = v),
+                ),
+                const SizedBox(width: 10),
+                const Text('Dark Mode'),
+              ],
+            ),
+            const SizedBox(height: 20),
+            const Text('Volume'),
+            Row(
+              children: [1, 2, 3].map((i) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Row(
+                    children: [
+                      Radio<int>(
+                        value: i,
+                        groupValue: _volume,
+                        onChanged: (v) => setState(() => _volume = v!),
+                      ),
+                      const SizedBox(width: 5),
+                      Text('$i'),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+            const Text('Brightness'),
+            const SizedBox(height: 10),
+            Slider(
+              value: _brightness,
+              min: 0.0,
+              max: 1.0,
+              onChanged: (v) => setState(() => _brightness = v),
+            ),
+            const SizedBox(height: 20),
+            Button(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Back'),
+            ),
+          ],
+        ),
       ),
     );
   }

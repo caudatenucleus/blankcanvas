@@ -6,6 +6,10 @@ class ControlCustomizations {
   const ControlCustomizations({
     this.buttons = const {},
     this.textFields = const {},
+    this.checkboxes = const {},
+    this.radios = const {},
+    this.switches = const {},
+    this.sliders = const {},
   });
 
   /// Map of button tags to their customization. Null key is the default.
@@ -14,9 +18,20 @@ class ControlCustomizations {
   /// Map of text field tags to their customization. Null key is the default.
   final Map<String?, TextFieldCustomization> textFields;
 
+  final Map<String?, CheckboxCustomization> checkboxes;
+  final Map<String?, RadioCustomization> radios;
+  final Map<String?, SwitchCustomization> switches;
+  final Map<String?, SliderCustomization> sliders;
+
   ButtonCustomization? getButton(String? tag) => buttons[tag] ?? buttons[null];
   TextFieldCustomization? getTextField(String? tag) =>
       textFields[tag] ?? textFields[null];
+  CheckboxCustomization? getCheckbox(String? tag) =>
+      checkboxes[tag] ?? checkboxes[null];
+  RadioCustomization? getRadio(String? tag) => radios[tag] ?? radios[null];
+  SwitchCustomization? getSwitch(String? tag) =>
+      switches[tag] ?? switches[null];
+  SliderCustomization? getSlider(String? tag) => sliders[tag] ?? sliders[null];
 }
 
 /// An [InheritedWidget] that provides [ControlCustomizations] to its descendants.

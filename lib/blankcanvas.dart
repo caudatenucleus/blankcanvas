@@ -2,4 +2,8 @@ export 'src/foundation/status.dart';
 export 'src/theme/customization.dart';
 export 'src/theme/theme.dart';
 export 'src/widgets/button.dart';
+export 'src/widgets/checkbox.dart';
+export 'src/widgets/radio.dart';
+export 'src/widgets/slider.dart';
+export 'src/widgets/switch.dart';
 export 'src/widgets/text_field.dart';

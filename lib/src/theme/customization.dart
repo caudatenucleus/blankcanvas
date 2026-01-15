@@ -39,3 +39,48 @@ class TextFieldCustomization extends ControlCustomization<ControlStatus> {
 
   final Color? cursorColor;
 }
+
+/// Customization for Checkboxes.
+class CheckboxCustomization extends ControlCustomization<ToggleControlStatus> {
+  const CheckboxCustomization({
+    required super.decoration,
+    required super.textStyle, // Often unused but kept for consistency or label
+    this.size,
+  });
+  final double? size;
+}
+
+/// Customization for Switches.
+class SwitchCustomization extends ControlCustomization<ToggleControlStatus> {
+  const SwitchCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.width,
+    this.height,
+  });
+  final double? width;
+  final double? height;
+}
+
+/// Customization for Radio buttons.
+class RadioCustomization extends ControlCustomization<RadioControlStatus> {
+  const RadioCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.size,
+  });
+  final double? size;
+}
+
+/// Customization for Sliders.
+class SliderCustomization extends ControlCustomization<SliderControlStatus> {
+  const SliderCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.trackHeight,
+    this.thumbSize,
+  });
+
+  final double? trackHeight;
+  final double? thumbSize;
+}

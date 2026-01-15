@@ -59,3 +59,55 @@ class MutableControlStatus extends ControlStatus {
     }
   }
 }
+
+/// Status for a Checkbox or Switch.
+class ToggleControlStatus extends MutableControlStatus {
+  /// Whether the control is currently checked/toggled on.
+  /// 0.0 = off, 1.0 = on.
+  double get checked => _checked;
+  double _checked = 0.0;
+  set checked(double value) {
+    if (_checked != value) {
+      _checked = value;
+      notify();
+    }
+  }
+}
+
+/// Status for a Radio button.
+class RadioControlStatus extends MutableControlStatus {
+  /// Whether the radio is currently selected.
+  /// 0.0 = unselected, 1.0 = selected.
+  double get selected => _selected;
+  double _selected = 0.0;
+  set selected(double value) {
+    if (_selected != value) {
+      _selected = value;
+      notify();
+    }
+  }
+}
+
+/// Status for a Slider.
+class SliderControlStatus extends MutableControlStatus {
+  /// The normalized value of the slider (0.0 to 1.0 generally, or map range).
+  /// For visual purposes, usually normalized. context might carry min/max.
+  double get value => _value;
+  double _value = 0.0;
+  set value(double v) {
+    if (_value != v) {
+      _value = v;
+      notify();
+    }
+  }
+
+  // Sliders might have an 'active' dragging state which is separate from focused/hovered
+  double get dragging => _dragging;
+  double _dragging = 0.0;
+  set dragging(double v) {
+    if (_dragging != v) {
+      _dragging = v;
+      notify();
+    }
+  }
+}
