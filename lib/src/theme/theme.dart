@@ -29,6 +29,8 @@ class ControlCustomizations {
     this.dataTables = const {},
     this.steppers = const {},
     this.accordions = const {},
+    this.listTiles = const {},
+    this.avatars = const {},
   });
 
   /// Map of button tags to their customization. Null key is the default.
@@ -61,6 +63,8 @@ class ControlCustomizations {
   final Map<String?, DataTableCustomization> dataTables;
   final Map<String?, StepperCustomization> steppers;
   final Map<String?, AccordionCustomization> accordions;
+  final Map<String?, ListTileCustomization> listTiles;
+  final Map<String?, AvatarCustomization> avatars;
 
   ButtonCustomization? getButton(String? tag) => buttons[tag] ?? buttons[null];
   TextFieldCustomization? getTextField(String? tag) =>
@@ -103,6 +107,9 @@ class ControlCustomizations {
       steppers[tag] ?? steppers[null];
   AccordionCustomization? getAccordion(String? tag) =>
       accordions[tag] ?? accordions[null];
+  ListTileCustomization? getListTile(String? tag) =>
+      listTiles[tag] ?? listTiles[null];
+  AvatarCustomization? getAvatar(String? tag) => avatars[tag] ?? avatars[null];
 
   /// A default theme that provides a standard look for all widgets.
   factory ControlCustomizations.defaultTheme() {
@@ -176,7 +183,193 @@ class ControlCustomizations {
       dataTables: {null: DataTableCustomization.simple()},
       steppers: {null: StepperCustomization.simple()},
       accordions: {null: AccordionCustomization.simple()},
+      listTiles: {null: ListTileCustomization.simple()},
+      avatars: {null: AvatarCustomization.simple()},
+
       // Add other defaults as needed or build them manually if simple() is missing
+    );
+  }
+
+  /// A dark theme preset.
+  factory ControlCustomizations.defaultDarkTheme() {
+    return ControlCustomizations(
+      buttons: {
+        null: ButtonCustomization.simple(
+          backgroundColor: const Color(0xFF1E88E5),
+          hoverColor: const Color(0xFF42A5F5),
+          pressColor: const Color(0xFF1565C0),
+          disabledColor: const Color(0xFF424242),
+          foregroundColor: const Color(0xFFFFFFFF),
+          borderRadius: BorderRadius.circular(8),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        ),
+      },
+      textFields: {
+        null: TextFieldCustomization.simple(
+          backgroundColor: const Color(0xFF303030),
+          focusedColor: const Color(0xFF424242),
+          borderColor: const Color(0xFF616161),
+          focusedBorderColor: const Color(0xFF64B5F6),
+          cursorColor: const Color(0xFF64B5F6),
+          textColor: const Color(0xFFE0E0E0),
+          borderRadius: BorderRadius.circular(8),
+          padding: const EdgeInsets.all(14),
+        ),
+      },
+      checkboxes: {
+        null: CheckboxCustomization.simple(
+          activeColor: const Color(0xFF64B5F6),
+          checkColor: const Color(0xFF121212),
+          borderRadius: BorderRadius.circular(4),
+        ),
+      },
+      radios: {
+        null: RadioCustomization.simple(
+          activeColor: const Color(0xFF64B5F6),
+          inactiveColor: const Color(0xFFBDBDBD),
+        ),
+      },
+      switches: {
+        null: SwitchCustomization.simple(
+          activeColor: const Color(0xFF64B5F6),
+          activeTrackColor: const Color(0xFF1E3A5F),
+          inactiveThumbColor: const Color(0xFFBDBDBD),
+          inactiveTrackColor: const Color(0xFF424242),
+          width: 48,
+          height: 24,
+        ),
+      },
+      listTiles: {
+        null: ListTileCustomization.simple(hoverColor: const Color(0xFF424242)),
+      },
+      avatars: {
+        null: AvatarCustomization.simple(
+          backgroundColor: const Color(0xFF424242),
+        ),
+      },
+      dataTables: {null: DataTableCustomization.simple()},
+      steppers: {null: StepperCustomization.simple()},
+      accordions: {null: AccordionCustomization.simple()},
+    );
+  }
+
+  /// A Material Design-inspired theme preset (warm purple accent).
+  factory ControlCustomizations.materialLikeTheme() {
+    return ControlCustomizations(
+      buttons: {
+        null: ButtonCustomization.simple(
+          backgroundColor: const Color(0xFF6200EE), // Material Purple
+          hoverColor: const Color(0xFF7C4DFF), // Material Deep Purple Accent
+          pressColor: const Color(0xFF3700B3),
+          disabledColor: const Color(0xFFE0E0E0),
+          foregroundColor: const Color(0xFFFFFFFF),
+          borderRadius: BorderRadius.circular(20), // Pill shape
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        ),
+      },
+      textFields: {
+        null: TextFieldCustomization.simple(
+          backgroundColor: const Color(0xFFFFFFFF),
+          focusedColor: const Color(0xFFFFFFFF),
+          borderColor: const Color(0xFFBDBDBD),
+          focusedBorderColor: const Color(0xFF6200EE),
+          cursorColor: const Color(0xFF6200EE),
+          textColor: const Color(0xFF212121),
+          borderRadius: BorderRadius.circular(4),
+          padding: const EdgeInsets.all(16),
+        ),
+      },
+      checkboxes: {
+        null: CheckboxCustomization.simple(
+          activeColor: const Color(0xFF6200EE),
+          checkColor: const Color(0xFFFFFFFF),
+          borderRadius: BorderRadius.circular(2),
+        ),
+      },
+      radios: {
+        null: RadioCustomization.simple(
+          activeColor: const Color(0xFF6200EE),
+          inactiveColor: const Color(0xFF757575),
+        ),
+      },
+      switches: {
+        null: SwitchCustomization.simple(
+          activeColor: const Color(0xFF6200EE),
+          activeTrackColor: const Color(0xFFBB86FC),
+          inactiveThumbColor: const Color(0xFFFAFAFA),
+          inactiveTrackColor: const Color(0xFFBDBDBD),
+          width: 36,
+          height: 18,
+        ),
+      },
+      listTiles: {null: ListTileCustomization.simple()},
+      avatars: {null: AvatarCustomization.simple()},
+      dataTables: {null: DataTableCustomization.simple()},
+      steppers: {null: StepperCustomization.simple()},
+      accordions: {null: AccordionCustomization.simple()},
+    );
+  }
+
+  /// A high contrast theme for accessibility.
+  factory ControlCustomizations.highContrastTheme() {
+    return ControlCustomizations(
+      buttons: {
+        null: ButtonCustomization.simple(
+          backgroundColor: const Color(0xFF000000),
+          hoverColor: const Color(0xFF333333),
+          pressColor: const Color(0xFF000000),
+          disabledColor: const Color(0xFF666666),
+          foregroundColor: const Color(0xFFFFFF00), // Yellow on black
+          borderRadius: BorderRadius.circular(0), // Sharp corners
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        ),
+      },
+      textFields: {
+        null: TextFieldCustomization.simple(
+          backgroundColor: const Color(0xFF000000),
+          focusedColor: const Color(0xFF000000),
+          borderColor: const Color(0xFFFFFFFF),
+          focusedBorderColor: const Color(0xFFFFFF00),
+          cursorColor: const Color(0xFFFFFF00),
+          textColor: const Color(0xFFFFFFFF),
+          borderRadius: BorderRadius.circular(0),
+          padding: const EdgeInsets.all(14),
+        ),
+      },
+      checkboxes: {
+        null: CheckboxCustomization.simple(
+          activeColor: const Color(0xFF000000),
+          checkColor: const Color(0xFFFFFF00),
+          borderRadius: BorderRadius.circular(0),
+        ),
+      },
+      radios: {
+        null: RadioCustomization.simple(
+          activeColor: const Color(0xFFFFFF00),
+          inactiveColor: const Color(0xFFFFFFFF),
+        ),
+      },
+      switches: {
+        null: SwitchCustomization.simple(
+          activeColor: const Color(0xFFFFFF00),
+          activeTrackColor: const Color(0xFF000000),
+          inactiveThumbColor: const Color(0xFFFFFFFF),
+          inactiveTrackColor: const Color(0xFF333333),
+          width: 52,
+          height: 28,
+        ),
+      },
+      listTiles: {
+        null: ListTileCustomization.simple(hoverColor: const Color(0xFF333333)),
+      },
+      avatars: {
+        null: AvatarCustomization.simple(
+          backgroundColor: const Color(0xFF333333),
+        ),
+      },
+      dataTables: {null: DataTableCustomization.simple()},
+      steppers: {null: StepperCustomization.simple()},
+      accordions: {null: AccordionCustomization.simple()},
     );
   }
 }

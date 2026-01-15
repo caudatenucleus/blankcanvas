@@ -40,29 +40,26 @@ This document outlines the development status and future plans for the BlankCanv
 - [x] **ColorPicker**: Color selection grid.
 
 ### Expansion Widgets
-- [x] **DataTable**: Themed tables with hover/select row states.
-- [x] **Stepper**: Step progress indicators.
-- [x] **Accordion**: Collapsible content panels.
+- [x] **DataTable**: Themed tables with hover/select row states (Migrated to `RenderObject`).
+- [x] **Stepper**: Step progress indicators (Migrated to `RenderObject`).
+- [x] **Accordion**: Collapsible content panels (Migrated to `RenderObject`).
 
 ### Low-Level Primitives (Engine API)
 - [x] **Engine Bridge**: `LeafRenderObjectWidget` utility for raw `dart:ui` access.
 - [x] **PrimitiveDrawing**: Initial proof of concept.
+- [x] **Layout Migration**: `LayoutBox` and `FlexBox` implemented as low-level `RenderObject`s.
+- [x] **Input Migration**: `Button`, `TextField`, `Checkbox`, `Radio`, `Switch`, `Slider`, `ProgressIndicator` all migrated to raw `RenderObject`s.
+
 
 ---
 
 ## 🚧 In Progress / Next Up
 
-### Low-Level Migration
-- [x] **Phase 12: Utility Migration**: Move `Divider`, `Badge`, `Card` to raw `RenderObject` implementations.
-- [ ] **Phase 13: Layout Migration**: Implement custom `Column`/`Row` equivalents as `MultiChildRenderObjectWidget`.
-
-- [ ] **Phase 14: Input Migration**: Migrate `Button`, `TextField`, `Checkbox` to full `RenderObject` implementations for maximum performance.
-
-
 ### Expansion
-- [ ] **Data Tables**: Themed tables with sorting/filtering UI hooks.
-- [ ] **Steppers**: Progress wizards.
-- [ ] **Accordion/ExpansionPanel**: Collapsible content sections.
+- [ ] **High-Level UI Primitives**: `ListTile`, `SearchField`, `Avatar`, `PageIndicator`.
+- [ ] **Notification System**: SnackBar/Toast equivalents.
+- [ ] **Header (Scrolling)**: Sliver-based headers for advanced scrolling.
+
 
 ### Theming
 - [ ] **Dark Mode Generic Preset**: A `defaultDarkTheme()` factory.

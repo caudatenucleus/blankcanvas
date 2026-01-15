@@ -26,3 +26,8 @@ export 'src/widgets/stepper.dart';
 export 'src/widgets/accordion.dart';
 export 'src/widgets/layout.dart';
 export 'src/widgets/primitive.dart';
+export 'src/widgets/list_tile.dart';
+export 'src/widgets/avatar.dart';
+export 'src/widgets/search_field.dart';
+export 'src/widgets/page_indicator.dart';
+export 'src/widgets/notification_popup.dart';

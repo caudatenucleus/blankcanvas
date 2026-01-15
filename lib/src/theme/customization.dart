@@ -689,7 +689,88 @@ class DataTableCustomization extends ControlCustomization<ControlStatus> {
   }
 }
 
+/// Customization for ListTile.
+class ListTileCustomization extends ControlCustomization<ControlStatus> {
+  const ListTileCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.subtitleTextStyle,
+    this.leadingPadding,
+    this.trailingPadding,
+    this.contentPadding,
+  });
+
+  final TextStyle? subtitleTextStyle;
+  final EdgeInsetsGeometry? leadingPadding;
+  final EdgeInsetsGeometry? trailingPadding;
+  final EdgeInsetsGeometry? contentPadding;
+
+  factory ListTileCustomization.simple({
+    Color? backgroundColor,
+    Color? hoverColor,
+    TextStyle? titleStyle,
+    TextStyle? subtitleStyle,
+    EdgeInsetsGeometry? contentPadding,
+  }) {
+    return ListTileCustomization(
+      decoration: (status) {
+        if (status.hovered > 0.5) {
+          return BoxDecoration(color: hoverColor ?? const Color(0xFFF5F5F5));
+        }
+        return BoxDecoration(color: backgroundColor ?? const Color(0x00000000));
+      },
+      textStyle: (status) =>
+          titleStyle ??
+          const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      subtitleTextStyle:
+          subtitleStyle ??
+          const TextStyle(fontSize: 14, color: Color(0xFF757575)),
+      contentPadding:
+          contentPadding ??
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    );
+  }
+}
+
+/// Customization for Avatar.
+class AvatarCustomization extends ControlCustomization<ControlStatus> {
+  const AvatarCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.size,
+    this.statusColor,
+  });
+
+  final double? size;
+  final Color? statusColor;
+
+  factory AvatarCustomization.simple({
+    double? size,
+    Color? backgroundColor,
+    Color? statusColor,
+    TextStyle? textStyle,
+    BorderRadius? borderRadius,
+  }) {
+    return AvatarCustomization(
+      size: size ?? 48,
+      statusColor: statusColor ?? const Color(0xFF4CAF50),
+      decoration: (status) => BoxDecoration(
+        color: backgroundColor ?? const Color(0xFFEEEEEE),
+        borderRadius: borderRadius ?? BorderRadius.circular(24),
+      ),
+      textStyle: (status) =>
+          textStyle ??
+          const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF757575),
+          ),
+    );
+  }
+}
+
 /// Customization for Stepper.
+
 class StepperCustomization extends ControlCustomization<StepControlStatus> {
   const StepperCustomization({
     required super.decoration, // Decoration for the step circle/indicator
