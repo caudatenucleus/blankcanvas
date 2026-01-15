@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import '../foundation/status.dart';
 import '../theme/theme.dart';
 
@@ -47,13 +48,19 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
     );
 
     _hoverController.addListener(
-      () => _status.hovered = _hoverController.value,
+      () => setState(() {
+        _status.hovered = _hoverController.value;
+      }),
     );
     _focusController.addListener(
-      () => _status.focused = _focusController.value,
+      () => setState(() {
+        _status.focused = _focusController.value;
+      }),
     );
     _checkController.addListener(
-      () => _status.checked = _checkController.value,
+      () => setState(() {
+        _status.checked = _checkController.value;
+      }),
     );
 
     _focusNode.addListener(() {
@@ -109,31 +116,130 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
       );
     }
 
-    return ListenableBuilder(
-      listenable: _status,
-      builder: (context, _) {
-        final decoration = customization.decoration(_status);
+    final decoration = customization.decoration(_status);
+    final double width = customization.width ?? 40.0;
+    final double height = customization.height ?? 20.0;
 
-        return MouseRegion(
-          onEnter: (_) => _hoverController.forward(),
-          onExit: (_) => _hoverController.reverse(),
-          cursor: widget.onChanged != null
-              ? SystemMouseCursors.click
-              : SystemMouseCursors.basic,
-          child: GestureDetector(
-            onTap: _handleTap,
-            // TODO: Implement drag gestures as per Design Doc
-            child: Focus(
-              focusNode: _focusNode,
-              child: Container(
-                width: customization.width ?? 40.0,
-                height: customization.height ?? 20.0,
-                decoration: decoration,
-              ),
-            ),
+    return MouseRegion(
+      onEnter: (_) => _hoverController.forward(),
+      onExit: (_) => _hoverController.reverse(),
+      cursor: widget.onChanged != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
+      child: GestureDetector(
+        onTap: _handleTap,
+        child: Focus(
+          focusNode: _focusNode,
+          child: _SwitchRenderWidget(
+            decoration: decoration is BoxDecoration
+                ? decoration
+                : const BoxDecoration(),
+            width: width,
+            height: height,
           ),
-        );
-      },
+        ),
+      ),
     );
+  }
+}
+
+class _SwitchRenderWidget extends LeafRenderObjectWidget {
+  const _SwitchRenderWidget({
+    required this.decoration,
+    required this.width,
+    required this.height,
+  });
+
+  final BoxDecoration decoration;
+  final double width;
+  final double height;
+
+  @override
+  RenderSwitch createRenderObject(BuildContext context) {
+    return RenderSwitch(
+      decoration: decoration,
+      widthValue: width,
+      heightValue: height,
+    );
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderSwitch renderObject,
+  ) {
+    renderObject
+      ..decoration = decoration
+      ..widthValue = width
+      ..heightValue = height;
+  }
+}
+
+class RenderSwitch extends RenderBox {
+  RenderSwitch({
+    required BoxDecoration decoration,
+    required double widthValue,
+    required double heightValue,
+  }) : _decoration = decoration,
+       _widthValue = widthValue,
+       _heightValue = heightValue;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  double _widthValue;
+  double get widthValue => _widthValue;
+  set widthValue(double value) {
+    if (_widthValue == value) return;
+    _widthValue = value;
+    markNeedsLayout();
+  }
+
+  double _heightValue;
+  double get heightValue => _heightValue;
+  set heightValue(double value) {
+    if (_heightValue == value) return;
+    _heightValue = value;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    size = constraints.constrain(Size(widthValue, heightValue));
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final Rect rect = offset & size;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0xFFCCCCCC);
+
+    // Paint background (track)
+    if (decoration.borderRadius != null) {
+      final borderRadius = decoration.borderRadius!.resolve(TextDirection.ltr);
+      context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(
+          context.canvas,
+          rect,
+          borderRadius: borderRadius,
+        );
+      }
+    } else {
+      context.canvas.drawRect(rect, paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(context.canvas, rect);
+      }
+    }
+
+    // Thumb drawing would happen here if it wasn't part of the decoration.
+    // In our Status system, the decoration usually changes its appearance (e.g. gradient)
+    // based on 'checked' double. If we want a separate physical thumb in the render object,
+    // we'd need more data from the customization.
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import '../foundation/status.dart';
 import '../theme/theme.dart';
 
@@ -47,13 +48,19 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin {
     );
 
     _hoverController.addListener(
-      () => _status.hovered = _hoverController.value,
+      () => setState(() {
+        _status.hovered = _hoverController.value;
+      }),
     );
     _focusController.addListener(
-      () => _status.focused = _focusController.value,
+      () => setState(() {
+        _status.focused = _focusController.value;
+      }),
     );
     _checkController.addListener(
-      () => _status.checked = _checkController.value,
+      () => setState(() {
+        _status.checked = _checkController.value;
+      }),
     );
 
     _focusNode.addListener(() {
@@ -95,11 +102,9 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final customizations = CustomizedTheme.of(context);
-    // Customization lookup could be generic if we had a better way, but specific getter is fine.
     final customization = customizations.getCheckbox(widget.tag);
 
     if (customization == null) {
-      // Fallback
       return SizedBox(
         width: 18,
         height: 18,
@@ -111,30 +116,105 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin {
       );
     }
 
-    return ListenableBuilder(
-      listenable: _status,
-      builder: (context, _) {
-        final decoration = customization.decoration(_status);
+    final decoration = customization.decoration(_status);
+    final double size = customization.size ?? 18.0;
 
-        return MouseRegion(
-          onEnter: (_) => _hoverController.forward(),
-          onExit: (_) => _hoverController.reverse(),
-          cursor: widget.onChanged != null
-              ? SystemMouseCursors.click
-              : SystemMouseCursors.basic,
-          child: GestureDetector(
-            onTap: _handleTap,
-            child: Focus(
-              focusNode: _focusNode,
-              child: Container(
-                width: customization.size ?? 18.0,
-                height: customization.size ?? 18.0,
-                decoration: decoration,
-              ),
-            ),
+    return MouseRegion(
+      onEnter: (_) => _hoverController.forward(),
+      onExit: (_) => _hoverController.reverse(),
+      cursor: widget.onChanged != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
+      child: GestureDetector(
+        onTap: _handleTap,
+        child: Focus(
+          focusNode: _focusNode,
+          child: _CheckboxRenderWidget(
+            decoration: decoration is BoxDecoration
+                ? decoration
+                : const BoxDecoration(),
+            size: size,
           ),
-        );
-      },
+        ),
+      ),
     );
+  }
+}
+
+class _CheckboxRenderWidget extends LeafRenderObjectWidget {
+  const _CheckboxRenderWidget({required this.decoration, required this.size});
+
+  final BoxDecoration decoration;
+  final double size;
+
+  @override
+  RenderCheckbox createRenderObject(BuildContext context) {
+    return RenderCheckbox(decoration: decoration, sizeValue: size);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderCheckbox renderObject,
+  ) {
+    renderObject
+      ..decoration = decoration
+      ..sizeValue = size;
+  }
+}
+
+class RenderCheckbox extends RenderBox {
+  RenderCheckbox({required BoxDecoration decoration, required double sizeValue})
+    : _decoration = decoration,
+      _sizeValue = sizeValue;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  double _sizeValue;
+  double get sizeValue => _sizeValue;
+  set sizeValue(double value) {
+    if (_sizeValue == value) return;
+    _sizeValue = value;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    size = constraints.constrain(Size.square(sizeValue));
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final Rect rect = offset & size;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0xFFCCCCCC);
+
+    // Paint background
+    if (decoration.borderRadius != null) {
+      final borderRadius = decoration.borderRadius!.resolve(TextDirection.ltr);
+      context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(
+          context.canvas,
+          rect,
+          borderRadius: borderRadius,
+        );
+      }
+    } else {
+      context.canvas.drawRect(rect, paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(context.canvas, rect);
+      }
+    }
+
+    // Note: The actual "check" mark is often part of the decoration in our system,
+    // or we could draw it here manually if we wanted a more standardized look.
+    // For now we trust the decoration provided by the theme.
   }
 }

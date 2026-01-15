@@ -24,6 +24,20 @@ abstract class ControlStatus with ChangeNotifier {
 
   // Helpers for subclasses to notify listeners when values change.
   void notify() => notifyListeners();
+
+  /// Resolves a value based on the current status.
+  ///
+  /// Priority order:
+  /// 1. [disabled] if [enabled] is false (< 0.5).
+  /// 2. [focused] if [focused] is true (> 0.0).
+  /// 3. [hovered] if [hovered] is true (> 0.0).
+  /// 4. [normal] (required fallback).
+  T resolve<T>({required T normal, T? hovered, T? focused, T? disabled}) {
+    if (enabled < 0.5 && disabled != null) return disabled;
+    if (this.focused > 0.0 && focused != null) return focused;
+    if (this.hovered > 0.0 && hovered != null) return hovered;
+    return normal;
+  }
 }
 
 /// A concrete implementation of [ControlStatus] that manages the values as
@@ -205,6 +219,149 @@ class TooltipControlStatus extends MutableControlStatus {
   set visible(double v) {
     if (_visible != v) {
       _visible = v;
+      notify();
+    }
+  }
+}
+
+/// Status for a DatePicker container.
+/// This tracks the overall state (e.g. view mode) but individual cells have their own status.
+class DatePickerControlStatus extends MutableControlStatus {
+  // Could track view mode (Day/Month/Year) in future.
+}
+
+/// Status for a single Date Cell in the picker.
+class DateCellControlStatus extends MutableControlStatus {
+  /// Whether the date is currently selected.
+  double get selected => _selected;
+  double _selected = 0.0;
+
+  set selected(double v) {
+    if (_selected != v) {
+      _selected = v;
+      notify();
+    }
+  }
+
+  /// Whether the date is today.
+  double get today => _today;
+  double _today = 0.0;
+
+  set today(double v) {
+    if (_today != v) {
+      _today = v;
+      notify();
+    }
+  }
+
+  /// Whether the date is in the currently displayed month.
+  /// 1.0 = current month, 0.0 = adjacent month (often grayed out).
+  double get currentMonth => _currentMonth;
+  double _currentMonth = 1.0;
+
+  set currentMonth(double v) {
+    if (_currentMonth != v) {
+      _currentMonth = v;
+      notify();
+    }
+  }
+}
+
+/// Status for a ColorPicker.
+class ColorPickerControlStatus extends MutableControlStatus {
+  // Could track selected color index or value if needed for custom painting,
+  // but usually passed down to items.
+}
+
+/// Status for a single Color Item in a picker.
+class ColorItemControlStatus extends MutableControlStatus {
+  /// Whether the color is selected.
+  double get selected => _selected;
+  double _selected = 0.0;
+
+  set selected(double v) {
+    if (_selected != v) {
+      _selected = v;
+      notify();
+    }
+  }
+}
+
+/// Status for a TreeView container.
+class TreeControlStatus extends MutableControlStatus {}
+
+/// Status for a Tree Item.
+class TreeItemControlStatus extends MutableControlStatus {
+  /// Whether the item is expanded (showing children).
+  double get expanded => _expanded;
+  double _expanded = 0.0;
+
+  set expanded(double v) {
+    if (_expanded != v) {
+      _expanded = v;
+      notify();
+    }
+  }
+
+  /// Whether the item is selected.
+  double get selected => _selected;
+  double _selected = 0.0;
+
+  set selected(double v) {
+    if (_selected != v) {
+      _selected = v;
+      notify();
+    }
+  }
+}
+
+/// Status for a DataTable (DataGrid) Row.
+class DataRowControlStatus extends MutableControlStatus {
+  double get selected => _selected;
+  double _selected = 0.0;
+
+  set selected(double v) {
+    if (_selected != v) {
+      _selected = v;
+      notify();
+    }
+  }
+}
+
+/// Status for a Stepper Step.
+class StepControlStatus extends MutableControlStatus {
+  /// 1.0 if active (currently focused step), 0.0 otherwise.
+  double get active => _active;
+  double _active = 0.0;
+
+  set active(double v) {
+    if (_active != v) {
+      _active = v;
+      notify();
+    }
+  }
+
+  /// 1.0 if completed (past step), 0.0 otherwise.
+  double get completed => _completed;
+  double _completed = 0.0;
+
+  set completed(double v) {
+    if (_completed != v) {
+      _completed = v;
+      notify();
+    }
+  }
+}
+
+/// Status for an Accordion Panel Header.
+class AccordionControlStatus extends MutableControlStatus {
+  /// 1.0 if expanded, 0.0 if collapsed.
+  double get expanded => _expanded;
+  double _expanded = 0.0;
+
+  set expanded(double v) {
+    if (_expanded != v) {
+      _expanded = v;
       notify();
     }
   }

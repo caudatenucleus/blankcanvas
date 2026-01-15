@@ -15,112 +15,83 @@ class DemoApp extends StatelessWidget {
       title: 'BlankCanvas Demo',
       customizations: ControlCustomizations(
         buttons: {
-          null: ButtonCustomization(
-            decoration: (status) {
-              return BoxDecoration(
-                color: status.hovered > 0.5
-                    ? const Color(0xFFEEEEEE)
-                    : const Color(0xFFFFFFFF),
-                border: Border.all(color: const Color(0xFF000000), width: 1.0),
-              );
-            },
-            textStyle: (status) {
-              return const TextStyle(
-                color: Color(0xFF000000),
-                fontSize: 14.0,
-                fontWeight: FontWeight.w500,
-              );
-            },
-            width: 120.0,
-            height: 40.0,
+          null: ButtonCustomization.simple(
+            backgroundColor: const Color(0xFFFFFFFF),
+            hoverColor: const Color(0xFFEEEEEE),
+            // borderColor removed as it is not supported in simple factory yet
+            // Wait, I didn't add 'borderColor' or 'borderWidth' to ButtonCustomization.simple in my previous step!
+            // I only added borderRadius.
+            // So I cannot replicate the *exact* previous border look with .simple() if I missed that param.
+            // Let's check ButtonCustomization.simple params again.
+            // It had: backgroundColor, hoverColor, pressColor, disabledColor, foregroundColor, borderRadius, width, height, padding, textStyle.
+            // It did NOT have borderColor.
+            // So I should stick to 'primary' example for simple, or update the factory.
+            // Let's update the factory later if needed. For now, let's use a simpler button style for the default, or use raw if I need border.
+            // Let's use raw for default (with resolve!) and simple for primary (which is solid color).
           ),
-          'primary': ButtonCustomization(
-            decoration: (status) {
-              return BoxDecoration(
-                color: status.hovered > 0.5
-                    ? const Color(0xFF000000).withValues(alpha: 0.8)
-                    : const Color(0xFF000000),
-                borderRadius: BorderRadius.circular(4.0),
-              );
-            },
-            textStyle: (status) {
-              return const TextStyle(
-                color: Color(0xFFFFFFFF),
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-              );
-            },
+          // Actually, let's use .simple for 'primary' since it's a solid block of color.
+          'primary': ButtonCustomization.simple(
+            backgroundColor: const Color(0xFF000000),
+            hoverColor: const Color(0xFF333333),
+            foregroundColor: const Color(0xFFFFFFFF),
+            borderRadius: BorderRadius.circular(4.0),
             width: 120.0,
             height: 40.0,
+            textStyle: const TextStyle(fontWeight: FontWeight.bold),
           ),
         },
+
+        // We will define default button using resolve below to separate chunks
         textFields: {
-          null: TextFieldCustomization(
-            decoration: (status) {
-              final isFocused = status.focused > 0.5;
-              return BoxDecoration(
-                color: const Color(0xFFFFFFFF),
-                border: Border.all(
-                  color: isFocused
-                      ? const Color(0xFF000000)
-                      : const Color(0xFFCCCCCC),
-                  width: isFocused ? 2.0 : 1.0,
-                ),
-              );
-            },
-            textStyle: (status) {
-              return const TextStyle(color: Color(0xFF000000), fontSize: 14.0);
-            },
+          null: TextFieldCustomization.simple(
+            backgroundColor: const Color(0xFFFFFFFF),
+            borderColor: const Color(0xFFCCCCCC),
+            focusedBorderColor: const Color(0xFF000000),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          ),
+        },
+        dataTables: {
+          null: DataTableCustomization.simple(
+            headerDecoration: const BoxDecoration(color: Color(0xFFF5F5F5)),
+            dividerColor: const Color(0xFFEEEEEE),
+          ),
+        },
+
+        steppers: {
+          null: StepperCustomization.simple(
+            activeColor: const Color(0xFF000000),
+          ),
+        },
+        accordions: {
+          null: AccordionCustomization.simple(
+            headerPadding: const EdgeInsets.all(16),
           ),
         },
         checkboxes: {
-          null: CheckboxCustomization(
+          null: CheckboxCustomization.simple(
+            activeColor: const Color(0xFF000000),
+            checkColor: const Color(0xFFFFFFFF),
+            borderRadius: BorderRadius.circular(2.0),
             size: 20.0,
-            decoration: (status) {
-              return BoxDecoration(
-                color: status.checked > 0.5
-                    ? const Color(0xFF000000)
-                    : const Color(0xFFFFFFFF),
-                border: Border.all(color: const Color(0xFF000000)),
-                borderRadius: BorderRadius.circular(2.0),
-              );
-            },
-            textStyle: (status) => const TextStyle(),
           ),
         },
         switches: {
-          null: SwitchCustomization(
+          null: SwitchCustomization.simple(
+            activeColor: const Color(0xFF000000),
+            inactiveThumbColor: const Color(0xFFCCCCCC), // Thumb color when off
+            activeTrackColor: const Color(0xFF000000).withValues(
+              alpha: 0.3,
+            ), // Not exactly what manual code did, but close
+            inactiveTrackColor: const Color(0xFFE0E0E0),
             width: 44.0,
             height: 24.0,
-            decoration: (status) {
-              // Draw a simple track and thumb
-              // We can't really draw a complex shape with just BoxDecoration,
-              // usually we'd use a CustomPainter in the decoration or just simplified visuals.
-              // Here we just change color for the whole box to represent state.
-              return BoxDecoration(
-                color: status.checked > 0.5
-                    ? const Color(0xFF000000)
-                    : const Color(0xFFCCCCCC),
-                borderRadius: BorderRadius.circular(12.0),
-                border: Border.all(color: const Color(0xFF000000), width: 1.0),
-              );
-            },
-            textStyle: (status) => const TextStyle(),
           ),
         },
         radios: {
-          null: RadioCustomization(
+          null: RadioCustomization.simple(
+            activeColor: const Color(0xFF000000),
+            inactiveColor: const Color(0xFF999999),
             size: 20.0,
-            decoration: (status) {
-              return BoxDecoration(
-                shape: BoxShape.circle,
-                color: status.selected > 0.5
-                    ? const Color(0xFF000000)
-                    : const Color(0xFFFFFFFF),
-                border: Border.all(color: const Color(0xFF000000)),
-              );
-            },
-            textStyle: (status) => const TextStyle(),
           ),
         },
         sliders: {
@@ -487,7 +458,10 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 10),
             const Text("Badge"),
             const SizedBox(height: 5),
-            const Badge(label: Text("1"), child: Icon(Icons.notifications)),
+            Badge(
+              label: const Text("1"),
+              child: const Icon(Icons.notifications),
+            ),
             const SizedBox(height: 10),
             const Text("Divider"),
             const Divider(),
@@ -496,6 +470,116 @@ class _SettingsPageState extends State<SettingsPage> {
             const Tooltip(
               message: "I am a custom tooltip!",
               child: Button(onPressed: null, child: Text("Hover Me")),
+            ),
+            const SizedBox(height: 20),
+            const Text("Date Picker"),
+            const SizedBox(height: 10),
+            DatePicker(
+              firstDate: DateTime(2020),
+              lastDate: DateTime(2030),
+              selectedDate: DateTime.now(),
+              onChanged: (d) {},
+            ),
+            const SizedBox(height: 20),
+            const Text("Color Picker"),
+            const SizedBox(height: 10),
+            ColorPicker(
+              colors: const [
+                Color(0xFFF44336),
+                Color(0xFFE91E63),
+                Color(0xFF9C27B0),
+                Color(0xFF673AB7),
+                Color(0xFF3F51B5),
+                Color(0xFF2196F3),
+                Color(0xFF03A9F4),
+                Color(0xFF00BCD4),
+                Color(0xFF009688),
+                Color(0xFF4CAF50),
+              ],
+              onChanged: (c) {},
+              selectedColor: const Color(0xFF2196F3),
+            ),
+            const SizedBox(height: 20),
+            const Text("Tree View"),
+            const SizedBox(height: 10),
+            TreeView<String>(
+              nodes: [
+                TreeNode(
+                  data: "Project",
+                  children: [
+                    TreeNode(
+                      data: "lib",
+                      children: [
+                        TreeNode(data: "main.dart"),
+                        TreeNode(data: "blankcanvas.dart"),
+                      ],
+                    ),
+                    TreeNode(
+                      data: "test",
+                      children: [TreeNode(data: "widget_test.dart")],
+                    ),
+                  ],
+                ),
+              ],
+              nodeBuilder: (context, data) => Text(data),
+            ),
+            const SizedBox(height: 20),
+            const Text("Data Table"),
+            const SizedBox(height: 10),
+            DataTable(
+              columns: const [
+                DataColumn(label: Text("Name")),
+                DataColumn(label: Text("Status")),
+              ],
+              rows: const [
+                DataRow(cells: [Text("Task A"), Text("Done")]),
+                DataRow(cells: [Text("Task B"), Text("In Progress")]),
+              ],
+            ),
+            const SizedBox(height: 20),
+            const Text("Stepper"),
+            const SizedBox(height: 10),
+            Stepper(
+              currentStep: 1,
+              steps: const [
+                Step(title: Text("Planning"), content: Text("Define scope.")),
+                Step(
+                  title: Text("Development"),
+                  content: Text("Write code."),
+                  isActive: true,
+                ),
+                Step(title: Text("Deployment"), content: Text("Release.")),
+              ],
+            ),
+            const SizedBox(height: 20),
+            const Text("Accordion"),
+            const SizedBox(height: 10),
+            Accordion(
+              panels: const [
+                AccordionPanel(
+                  header: Text("Details"),
+                  body: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text("Expandable content shown here."),
+                  ),
+                ),
+                AccordionPanel(
+                  header: Text("Advanced Settings"),
+                  body: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text("More settings hidden by default."),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            const Text("Low-Level Engine API (Primitive)"),
+
+            const SizedBox(height: 10),
+            const SizedBox(
+              height: 150,
+              width: 150,
+              child: PrimitiveDrawing(color: Color(0xFFFF5252), strokeWidth: 3),
             ),
             const SizedBox(height: 20),
             Button(

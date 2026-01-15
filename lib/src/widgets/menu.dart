@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/rendering.dart';
 import '../foundation/status.dart';
 import '../theme/theme.dart';
+import 'layout.dart';
 
 /// Status for a Menu Item.
 class MenuItemStatus extends MenuItemControlStatus {}
@@ -42,10 +44,14 @@ class _MenuItemState extends State<MenuItem>
     );
 
     _hoverController.addListener(
-      () => _status.hovered = _hoverController.value,
+      () => setState(() {
+        _status.hovered = _hoverController.value;
+      }),
     );
     _focusController.addListener(
-      () => _status.focused = _focusController.value,
+      () => setState(() {
+        _status.focused = _focusController.value;
+      }),
     );
 
     _focusNode.addListener(() {
@@ -70,53 +76,137 @@ class _MenuItemState extends State<MenuItem>
     final customizations = CustomizedTheme.of(context);
     final customization = customizations.getMenuItem(widget.tag);
 
-    if (customization == null) {
-      // Fallback
-      return GestureDetector(
+    final decoration =
+        customization?.decoration(_status) ?? const BoxDecoration();
+    final textStyle =
+        customization?.textStyle(_status) ??
+        const TextStyle(color: Color(0xFF000000));
+    final padding =
+        customization?.padding ??
+        const EdgeInsets.symmetric(vertical: 8, horizontal: 16);
+
+    return MouseRegion(
+      onEnter: (_) => _hoverController.forward(),
+      onExit: (_) => _hoverController.reverse(),
+      cursor: widget.onPressed != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
+      child: GestureDetector(
         onTap: widget.onPressed,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: DefaultTextStyle(
-            style: const TextStyle(color: Color(0xFF000000)),
-            child: widget.child,
+        child: Focus(
+          focusNode: _focusNode,
+          child: _MenuItemRenderWidget(
+            decoration: decoration is BoxDecoration
+                ? decoration
+                : const BoxDecoration(),
+            padding: padding,
+            child: DefaultTextStyle(style: textStyle, child: widget.child),
           ),
         ),
-      );
-    }
-
-    return ListenableBuilder(
-      listenable: _status,
-      builder: (context, _) {
-        final decoration = customization.decoration(_status);
-        final textStyle = customization.textStyle(_status);
-
-        return MouseRegion(
-          onEnter: (_) => _hoverController.forward(),
-          onExit: (_) => _hoverController.reverse(),
-          cursor: widget.onPressed != null
-              ? SystemMouseCursors.click
-              : SystemMouseCursors.basic,
-          child: GestureDetector(
-            onTap: widget.onPressed,
-            child: Focus(
-              focusNode: _focusNode,
-              child: Container(
-                decoration: decoration,
-                padding:
-                    customization.padding ??
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: DefaultTextStyle(style: textStyle, child: widget.child),
-              ),
-            ),
-          ),
-        );
-      },
+      ),
     );
   }
 }
 
+class _MenuItemRenderWidget extends SingleChildRenderObjectWidget {
+  const _MenuItemRenderWidget({
+    super.child,
+    required this.decoration,
+    required this.padding,
+  });
+
+  final BoxDecoration decoration;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  RenderMenuItemBox createRenderObject(BuildContext context) {
+    return RenderMenuItemBox(decoration: decoration, padding: padding);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderMenuItemBox renderObject,
+  ) {
+    renderObject
+      ..decoration = decoration
+      ..padding = padding;
+  }
+}
+
+class RenderMenuItemBox extends RenderProxyBox {
+  RenderMenuItemBox({
+    required BoxDecoration decoration,
+    required EdgeInsetsGeometry padding,
+  }) : _decoration = decoration,
+       _padding = padding;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  EdgeInsetsGeometry _padding;
+  EdgeInsetsGeometry get padding => _padding;
+  set padding(EdgeInsetsGeometry value) {
+    if (_padding == value) return;
+    _padding = value;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    if (child != null) {
+      final resolvedPadding = padding.resolve(TextDirection.ltr);
+      child!.layout(constraints.deflate(resolvedPadding), parentUsesSize: true);
+      size = constraints.constrain(
+        Size(
+          child!.size.width + resolvedPadding.horizontal,
+          child!.size.height + resolvedPadding.vertical,
+        ),
+      );
+
+      final BoxParentData childParentData = child!.parentData! as BoxParentData;
+      childParentData.offset = resolvedPadding.topLeft;
+    } else {
+      size = constraints.constrain(Size.zero);
+    }
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final Rect rect = offset & size;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0x00000000);
+
+    if (decoration.borderRadius != null) {
+      final borderRadius = decoration.borderRadius!.resolve(TextDirection.ltr);
+      context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(
+          context.canvas,
+          rect,
+          borderRadius: borderRadius,
+        );
+      }
+    } else {
+      context.canvas.drawRect(rect, paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(context.canvas, rect);
+      }
+    }
+
+    if (child != null) {
+      final BoxParentData childParentData = child!.parentData! as BoxParentData;
+      context.paintChild(child!, childParentData.offset + offset);
+    }
+  }
+}
+
 /// A vertical Menu container.
-/// Usually wrapped in a popup, but can be inline.
 class Menu extends StatelessWidget {
   const Menu({super.key, required this.children, this.tag});
 
@@ -128,34 +218,83 @@ class Menu extends StatelessWidget {
     final customizations = CustomizedTheme.of(context);
     final customization = customizations.getMenu(tag);
 
-    if (customization == null) {
-      // Fallback
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      );
-    }
-
-    // We create a dummy status for the Menu container (it's mostly static, but could support hover/focus if focusable)
-    // CardControlStatus is re-used for MenuCustomization.
     final status = CardControlStatus(); // Static for now
+    final decoration =
+        customization?.decoration(status) ?? const BoxDecoration();
+    final textStyle = customization?.textStyle(status) ?? const TextStyle();
 
-    final decoration = customization.decoration(status);
-    final textStyle = customization.textStyle(status);
-
-    return Container(
-      decoration: decoration,
+    return _MenuRenderWidget(
+      decoration: decoration is BoxDecoration
+          ? decoration
+          : const BoxDecoration(),
       child: DefaultTextStyle(
-        // Default text style for menu items if they don't override
         style: textStyle,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: FlexBox(
+          direction: Axis.vertical,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: children,
         ),
       ),
     );
+  }
+}
+
+class _MenuRenderWidget extends SingleChildRenderObjectWidget {
+  const _MenuRenderWidget({super.child, required this.decoration});
+
+  final BoxDecoration decoration;
+
+  @override
+  RenderMenuBox createRenderObject(BuildContext context) {
+    return RenderMenuBox(decoration: decoration);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderMenuBox renderObject,
+  ) {
+    renderObject.decoration = decoration;
+  }
+}
+
+class RenderMenuBox extends RenderProxyBox {
+  RenderMenuBox({required BoxDecoration decoration}) : _decoration = decoration;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final Rect rect = offset & size;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0x00000000);
+
+    if (decoration.borderRadius != null) {
+      final borderRadius = decoration.borderRadius!.resolve(TextDirection.ltr);
+      context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(
+          context.canvas,
+          rect,
+          borderRadius: borderRadius,
+        );
+      }
+    } else {
+      context.canvas.drawRect(rect, paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(context.canvas, rect);
+      }
+    }
+
+    if (child != null) {
+      context.paintChild(child!, offset);
+    }
   }
 }
 

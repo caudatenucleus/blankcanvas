@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/rendering.dart';
 import '../foundation/status.dart';
 import '../theme/theme.dart';
 
@@ -27,7 +28,6 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
 
   late final AnimationController _hoverController;
   late final AnimationController _focusController;
-  late final AnimationController _activeController;
 
   final FocusNode _focusNode = FocusNode();
 
@@ -42,19 +42,17 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
-    _activeController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-    );
 
     _hoverController.addListener(
-      () => _status.hovered = _hoverController.value,
+      () => setState(() {
+        _status.hovered = _hoverController.value;
+      }),
     );
     _focusController.addListener(
-      () => _status.focused = _focusController.value,
+      () => setState(() {
+        _status.focused = _focusController.value;
+      }),
     );
-    // Active state is instant for buttons usually, but we can animate it if needed.
-    // For now we'll set it directly or use controller if we want smooth 'press' in/out.
 
     _focusNode.addListener(() {
       _focusNode.hasFocus
@@ -75,7 +73,6 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
   void dispose() {
     _hoverController.dispose();
     _focusController.dispose();
-    _activeController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -86,58 +83,163 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
     final customization = customizations.getButton(widget.tag);
 
     if (customization == null) {
-      // Fallback if no theme is provided at all
       return widget.child;
     }
 
-    return ListenableBuilder(
-      listenable: _status,
-      builder: (context, _) {
-        final decoration = customization.decoration(_status);
-        final textStyle = customization.textStyle(_status);
+    final decoration = customization.decoration(_status);
+    final textStyle = customization.textStyle(_status);
 
-        return MouseRegion(
-          onEnter: (_) => _hoverController.forward(),
-          onExit: (_) => _hoverController.reverse(),
-          cursor: widget.onPressed != null
-              ? SystemMouseCursors.click
-              : SystemMouseCursors.basic,
-          child: GestureDetector(
-            onTapDown: (_) {
-              if (widget.onPressed != null) {
-                _status.enabled = 1.0;
-              } // Ensure enabled
-              // Manual instant set for responsiveness, or animate
-              // _status.notify(); // Not needed if we don't change a value, but...
-              // Let's assume we want to track 'active' (pressed)
-              // The mutable status doesn't have 'active' by default in base class?
-              // Wait, base class has hovered, focused, enabled.
-              // We should add active to base or subclass.
-              // For now let's skip strict 'active' double if not in base,
-              // but the doc says 'Active (mouse/touch pressing)'.
-              // I'll assume base class is extensible or I should have added it.
-            },
-            onTap: widget.onPressed,
-            child: Focus(
-              focusNode: _focusNode,
-              child: AnimatedContainer(
-                duration: const Duration(
-                  milliseconds: 0,
-                ), // Decoration is built per frame if we used Ticker, but here we rebuild on status change.
-                // Actually, since _status.hovered changes every frame of the animation controller,
-                // and we rebuild, we are effectively animating manually.
-                decoration: decoration,
-                width: customization.width,
-                height: customization.height,
-                child: DefaultTextStyle(
-                  style: textStyle,
-                  child: Center(child: widget.child),
-                ),
-              ),
+    return MouseRegion(
+      onEnter: (_) => _hoverController.forward(),
+      onExit: (_) => _hoverController.reverse(),
+      cursor: widget.onPressed != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: Focus(
+          focusNode: _focusNode,
+          child: _ButtonRenderWidget(
+            decoration: decoration is BoxDecoration
+                ? decoration
+                : const BoxDecoration(),
+            width: customization.width,
+            height: customization.height,
+            child: DefaultTextStyle(
+              style: textStyle,
+              child: Center(child: widget.child),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
+  }
+}
+
+class _ButtonRenderWidget extends SingleChildRenderObjectWidget {
+  const _ButtonRenderWidget({
+    super.child,
+    required this.decoration,
+    this.width,
+    this.height,
+  });
+
+  final BoxDecoration decoration;
+  final double? width;
+  final double? height;
+
+  @override
+  RenderButton createRenderObject(BuildContext context) {
+    return RenderButton(decoration: decoration, width: width, height: height);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderButton renderObject,
+  ) {
+    renderObject
+      ..decoration = decoration
+      ..width = width
+      ..height = height;
+  }
+}
+
+class RenderButton extends RenderProxyBox {
+  RenderButton({
+    required BoxDecoration decoration,
+    double? width,
+    double? height,
+  }) : _decoration = decoration,
+       _width = width,
+       _height = height;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  double? _width;
+  double? get width => _width;
+  set width(double? value) {
+    if (_width == value) return;
+    _width = value;
+    markNeedsLayout();
+  }
+
+  double? _height;
+  double? get height => _height;
+  set height(double? value) {
+    if (_height == value) return;
+    _height = value;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    if (child != null) {
+      final double? constrainedWidth = width;
+      final double? constrainedHeight = height;
+
+      if (constrainedWidth != null && constrainedHeight != null) {
+        child!.layout(
+          BoxConstraints.tight(Size(constrainedWidth, constrainedHeight)),
+          parentUsesSize: true,
+        );
+        size = child!.size;
+      } else {
+        child!.layout(constraints, parentUsesSize: true);
+        size = constraints.constrain(
+          Size(
+            constrainedWidth ?? child!.size.width,
+            constrainedHeight ?? child!.size.height,
+          ),
+        );
+      }
+    } else {
+      size = constraints.constrain(Size(width ?? 0.0, height ?? 0.0));
+    }
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final Rect rect = offset & size;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0x00000000);
+
+    // Paint shadow
+    if (decoration.boxShadow != null) {
+      for (final shadow in decoration.boxShadow!) {
+        context.canvas.drawRect(
+          rect.shift(shadow.offset).inflate(shadow.spreadRadius),
+          shadow.toPaint(),
+        );
+      }
+    }
+
+    // Paint background
+    if (decoration.borderRadius != null) {
+      final borderRadius = decoration.borderRadius!.resolve(TextDirection.ltr);
+      context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(
+          context.canvas,
+          rect,
+          borderRadius: borderRadius,
+        );
+      }
+    } else {
+      context.canvas.drawRect(rect, paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(context.canvas, rect);
+      }
+    }
+
+    if (child != null) {
+      context.paintChild(child!, offset);
+    }
   }
 }

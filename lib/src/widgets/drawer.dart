@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/rendering.dart';
 import '../foundation/status.dart';
 import '../theme/theme.dart';
 
@@ -17,32 +18,115 @@ class Drawer extends StatelessWidget {
     final customizations = CustomizedTheme.of(context);
     final customization = customizations.getDrawer(tag);
 
-    if (customization == null) {
-      // Fallback
-      return Container(
-        width: 300,
-        height: double.infinity,
-        color: const Color(0xFFFFFFFF),
-        child: child,
-      );
-    }
-
     final status = DrawerStatus(); // Static for now
+    final decoration =
+        customization?.decoration(status) ??
+        const BoxDecoration(color: Color(0xFFFFFFFF));
+    final textStyle = customization?.textStyle(status) ?? const TextStyle();
+    final double width = customization?.width ?? 300;
 
-    final decoration = customization.decoration(status);
-    final textStyle = customization.textStyle(status);
-
-    return Container(
-      width: customization.width ?? 300,
-      height: double.infinity,
-      decoration: decoration,
+    return _DrawerRenderWidget(
+      decoration: decoration is BoxDecoration
+          ? decoration
+          : const BoxDecoration(),
+      widthValue: width,
       child: DefaultTextStyle(style: textStyle, child: child),
     );
   }
 }
 
+class _DrawerRenderWidget extends SingleChildRenderObjectWidget {
+  const _DrawerRenderWidget({
+    super.child,
+    required this.decoration,
+    required this.widthValue,
+  });
+
+  final BoxDecoration decoration;
+  final double widthValue;
+
+  @override
+  RenderDrawerBox createRenderObject(BuildContext context) {
+    return RenderDrawerBox(decoration: decoration, widthValue: widthValue);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderDrawerBox renderObject,
+  ) {
+    renderObject
+      ..decoration = decoration
+      ..widthValue = widthValue;
+  }
+}
+
+class RenderDrawerBox extends RenderProxyBox {
+  RenderDrawerBox({
+    required BoxDecoration decoration,
+    required double widthValue,
+  }) : _decoration = decoration,
+       _widthValue = widthValue;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  double _widthValue;
+  double get widthValue => _widthValue;
+  set widthValue(double value) {
+    if (_widthValue == value) return;
+    _widthValue = value;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    if (child != null) {
+      child!.layout(
+        constraints.tighten(width: widthValue).loosen(),
+        parentUsesSize: true,
+      );
+      size = constraints.constrain(Size(widthValue, constraints.maxHeight));
+    } else {
+      size = constraints.constrain(Size(widthValue, 0.0));
+    }
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final Rect rect = offset & size;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0xFFFFFFFF);
+
+    if (decoration.borderRadius != null) {
+      final borderRadius = decoration.borderRadius!.resolve(TextDirection.ltr);
+      context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(
+          context.canvas,
+          rect,
+          borderRadius: borderRadius,
+        );
+      }
+    } else {
+      context.canvas.drawRect(rect, paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(context.canvas, rect);
+      }
+    }
+
+    if (child != null) {
+      context.paintChild(child!, offset);
+    }
+  }
+}
+
 /// Helper to show a drawer using the customization.
-/// This mimics showDialog/showGeneralDialog but for a side drawer.
 Future<T?> showDrawer<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -59,13 +143,6 @@ Future<T?> showDrawer<T>({
   return showGeneralDialog<T>(
     context: context,
     pageBuilder: (buildContext, animation, secondaryAnimation) {
-      // We pass the context to builder so they can inherit theme if needed,
-      // though showGeneralDialog routes usually sit above the app widget tree so they might lose inherited widgets
-      // unless wrapped. However, CustomizedApp wraps WidgetsApp, so we should be fine if context is right.
-      // Wait, standard showGeneralDialog pushes a new route. We might need to wrap the builder with the theme.
-      // But CustomizedTheme is usually at the top of the app.
-      // Let's assume it works for now.
-
       return Align(
         alignment: Alignment.centerLeft,
         child: builder(buildContext),

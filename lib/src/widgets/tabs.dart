@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/rendering.dart';
 import '../foundation/status.dart';
 import '../theme/theme.dart';
 import '../theme/customization.dart';
+import 'layout.dart';
 
 /// Status for a single Tab.
 class TabStatus extends TabControlStatus {}
@@ -31,39 +33,14 @@ class TabControl<T> extends StatefulWidget {
 }
 
 class _TabControlState<T> extends State<TabControl<T>> {
-  // We need a status for EACH item?
-  // No, usually each item has its own status (hovered, selected).
-  // So we probably need a widget for each item.
-
   @override
   Widget build(BuildContext context) {
     final customizations = CustomizedTheme.of(context);
     final customization = customizations.getTab(widget.tag);
 
-    // If no customization, render raw row
-    if (customization == null) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: widget.items.map((item) {
-          final isSelected = item == widget.groupValue;
-          return GestureDetector(
-            onTap: () => widget.onChanged(item),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "$item",
-                style: TextStyle(
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      );
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return FlexBox(
+      direction: Axis.horizontal,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: widget.items.map((item) {
         return _TabItem<T>(
           item: item,
@@ -82,14 +59,14 @@ class _TabItem<T> extends StatefulWidget {
     required this.item,
     required this.isSelected,
     required this.onChanged,
-    required this.customization,
+    this.customization,
     this.builder,
   });
 
   final T item;
   final bool isSelected;
   final ValueChanged<T> onChanged;
-  final TabCustomization customization;
+  final TabCustomization? customization;
   final Widget Function(BuildContext context, T item, TabStatus status)?
   builder;
 
@@ -110,7 +87,9 @@ class _TabItemState<T> extends State<_TabItem<T>>
       duration: const Duration(milliseconds: 150),
     );
     _hoverController.addListener(
-      () => _status.hovered = _hoverController.value,
+      () => setState(() {
+        _status.hovered = _hoverController.value;
+      }),
     );
     _status.selected = widget.isSelected ? 1.0 : 0.0;
   }
@@ -131,35 +110,132 @@ class _TabItemState<T> extends State<_TabItem<T>>
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: _status,
-      builder: (context, _) {
-        final decoration = widget.customization.decoration(_status);
-        final textStyle = widget.customization.textStyle(_status);
+    final decoration = widget.customization?.decoration(_status);
+    final textStyle =
+        widget.customization?.textStyle(_status) ?? const TextStyle();
 
-        Widget child;
-        if (widget.builder != null) {
-          child = widget.builder!(context, widget.item, _status);
-        } else {
-          child = Text("${widget.item}");
-        }
+    Widget child;
+    if (widget.builder != null) {
+      child = widget.builder!(context, widget.item, _status);
+    } else {
+      child = Text("${widget.item}");
+    }
 
-        return MouseRegion(
-          onEnter: (_) => _hoverController.forward(),
-          onExit: (_) => _hoverController.reverse(),
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: () => widget.onChanged(widget.item),
-            child: Container(
-              decoration: decoration,
-              padding:
-                  widget.customization.padding ??
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: DefaultTextStyle(style: textStyle, child: child),
-            ),
-          ),
-        );
-      },
+    return MouseRegion(
+      onEnter: (_) => _hoverController.forward(),
+      onExit: (_) => _hoverController.reverse(),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => widget.onChanged(widget.item),
+        child: _TabRenderWidget(
+          decoration: decoration is BoxDecoration
+              ? decoration
+              : const BoxDecoration(),
+          padding:
+              widget.customization?.padding ??
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: DefaultTextStyle(style: textStyle, child: child),
+        ),
+      ),
     );
+  }
+}
+
+class _TabRenderWidget extends SingleChildRenderObjectWidget {
+  const _TabRenderWidget({
+    super.child,
+    required this.decoration,
+    required this.padding,
+  });
+
+  final BoxDecoration decoration;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  RenderTab createRenderObject(BuildContext context) {
+    return RenderTab(decoration: decoration, padding: padding);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderTab renderObject,
+  ) {
+    renderObject
+      ..decoration = decoration
+      ..padding = padding;
+  }
+}
+
+class RenderTab extends RenderProxyBox {
+  RenderTab({
+    required BoxDecoration decoration,
+    required EdgeInsetsGeometry padding,
+  }) : _decoration = decoration,
+       _padding = padding;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  EdgeInsetsGeometry _padding;
+  EdgeInsetsGeometry get padding => _padding;
+  set padding(EdgeInsetsGeometry value) {
+    if (_padding == value) return;
+    _padding = value;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    if (child != null) {
+      final resolvedPadding = padding.resolve(TextDirection.ltr);
+      child!.layout(constraints.deflate(resolvedPadding), parentUsesSize: true);
+      size = constraints.constrain(
+        Size(
+          child!.size.width + resolvedPadding.horizontal,
+          child!.size.height + resolvedPadding.vertical,
+        ),
+      );
+
+      final BoxParentData childParentData = child!.parentData! as BoxParentData;
+      childParentData.offset = resolvedPadding.topLeft;
+    } else {
+      size = constraints.constrain(Size.zero);
+    }
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final Rect rect = offset & size;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0x00000000);
+
+    // Paint background
+    if (decoration.borderRadius != null) {
+      final borderRadius = decoration.borderRadius!.resolve(TextDirection.ltr);
+      context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(
+          context.canvas,
+          rect,
+          borderRadius: borderRadius,
+        );
+      }
+    } else {
+      context.canvas.drawRect(rect, paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(context.canvas, rect);
+      }
+    }
+
+    if (child != null) {
+      final BoxParentData childParentData = child!.parentData! as BoxParentData;
+      context.paintChild(child!, childParentData.offset + offset);
+    }
   }
 }

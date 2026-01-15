@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import '../foundation/status.dart';
 import '../theme/theme.dart';
 
@@ -60,7 +61,6 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
     final customization = customizations.getProgressIndicator(widget.tag);
 
     if (customization == null) {
-      // Simple fallback
       return SizedBox(
         height: 4,
         child: ColoredBox(
@@ -73,34 +73,157 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
       );
     }
 
-    return ListenableBuilder(
-      listenable: _status,
-      builder: (context, _) {
-        final decoration = customization.decoration(_status);
+    final decoration = customization.decoration(_status);
+    final double height = customization.height ?? 4.0;
 
-        // If indeterminate, we might want to manually animate the decoration or use a specific painter.
-        // For Hixie's architecture, the decoration itself is supposed to react to status.
-        // We updated status.progress.
-        // For indeterminate, we can use the AnimationController to drive a value in status if we wanted 'spinner position',
-        // but base ProgressControlStatus only has 'progress' (nullable).
-
-        return Container(
-          height: customization.height ?? 4.0,
-          decoration:
-              decoration, // The decoration logic in theme needs to handle 'null' progress for indeterminate look
-          child: widget.value == null
-              ? AnimatedBuilder(
-                  animation: _indeterminateController,
-                  builder: (context, child) {
-                    // This is a bit of a hack to let the theme know about animation phase without dirtying the status too much?
-                    // Actually, strict BlankCanvas would put the animation phase into the Status if it affects rendering.
-                    // Let's assume for now the decoration just draws a static 'indeterminate' style or handles it internally if it's an AnimatedDecoration.
-                    return const SizedBox();
-                  },
-                )
-              : null,
+    return AnimatedBuilder(
+      animation: _indeterminateController,
+      builder: (context, child) {
+        return _ProgressRenderWidget(
+          decoration: decoration is BoxDecoration
+              ? decoration
+              : const BoxDecoration(),
+          height: height,
+          progress: widget.value,
+          animationValue: _indeterminateController.value,
         );
       },
     );
+  }
+}
+
+class _ProgressRenderWidget extends LeafRenderObjectWidget {
+  const _ProgressRenderWidget({
+    required this.decoration,
+    required this.height,
+    this.progress,
+    required this.animationValue,
+  });
+
+  final BoxDecoration decoration;
+  final double height;
+  final double? progress;
+  final double animationValue;
+
+  @override
+  RenderProgressIndicator createRenderObject(BuildContext context) {
+    return RenderProgressIndicator(
+      decoration: decoration,
+      heightValue: height,
+      progress: progress,
+      animationValue: animationValue,
+    );
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderProgressIndicator renderObject,
+  ) {
+    renderObject
+      ..decoration = decoration
+      ..heightValue = height
+      ..progress = progress
+      ..animationValue = animationValue;
+  }
+}
+
+class RenderProgressIndicator extends RenderBox {
+  RenderProgressIndicator({
+    required BoxDecoration decoration,
+    required double heightValue,
+    double? progress,
+    required double animationValue,
+  }) : _decoration = decoration,
+       _heightValue = heightValue,
+       _progress = progress,
+       _animationValue = animationValue;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  double _heightValue;
+  double get heightValue => _heightValue;
+  set heightValue(double value) {
+    if (_heightValue == value) return;
+    _heightValue = value;
+    markNeedsLayout();
+  }
+
+  double? _progress;
+  double? get progress => _progress;
+  set progress(double? value) {
+    if (_progress == value) return;
+    _progress = value;
+    markNeedsPaint();
+  }
+
+  double _animationValue;
+  double get animationValue => _animationValue;
+  set animationValue(double value) {
+    if (_animationValue == value) return;
+    _animationValue = value;
+    markNeedsPaint();
+  }
+
+  @override
+  void performLayout() {
+    size = constraints.constrain(Size(constraints.maxWidth, heightValue));
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final Rect rect = offset & size;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0xFFEEEEEE);
+
+    // Paint background (track)
+    if (decoration.borderRadius != null) {
+      final borderRadius = decoration.borderRadius!.resolve(TextDirection.ltr);
+      context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+    } else {
+      context.canvas.drawRect(rect, paint);
+    }
+
+    // Paint progress
+    if (progress != null) {
+      final double progressWidth = size.width * progress!.clamp(0.0, 1.0);
+      final Rect progressRect = offset & Size(progressWidth, size.height);
+      final Paint progressPaint = Paint()
+        ..color = const Color(0xFF000000); // Default to black for indicator
+
+      if (decoration.borderRadius != null) {
+        final borderRadius = decoration.borderRadius!.resolve(
+          TextDirection.ltr,
+        );
+        context.canvas.drawRRect(
+          borderRadius.toRRect(progressRect),
+          progressPaint,
+        );
+      } else {
+        context.canvas.drawRect(progressRect, progressPaint);
+      }
+    } else {
+      // Indeterminate: paint a moving segment
+      final double segmentWidth = size.width * 0.3;
+      final double x =
+          (size.width + segmentWidth) * animationValue - segmentWidth;
+      final Rect progressRect = Rect.fromLTWH(
+        offset.dx + x,
+        offset.dy,
+        segmentWidth,
+        size.height,
+      ).intersect(rect);
+
+      final Paint progressPaint = Paint()
+        ..color = const Color(0xFF000000).withValues(alpha: 0.5);
+
+      context.canvas.drawRect(progressRect, progressPaint);
+    }
   }
 }

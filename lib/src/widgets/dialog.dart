@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/rendering.dart';
 import '../foundation/status.dart';
 import '../theme/theme.dart';
 
@@ -19,47 +20,135 @@ class Dialog extends StatefulWidget {
 class _DialogState extends State<Dialog> {
   final DialogStatus _status = DialogStatus();
 
-  // Dialogs typically don't have hover/focus interaction in the same way, but they could.
-  // We'll keep it simple for now and just render the decoration.
-
   @override
   Widget build(BuildContext context) {
-    // Note: When used in showDialog, the context must be one that contains the CustomizedTheme.
-    // Standard showDialog/showGeneralDialog puts the route above the Navigator.
-    // So CustomizedTheme must be above Navigator (e.g. wrapping MaterialApp/WidgetsApp).
-
     final customizations = CustomizedTheme.of(context);
     final customization = customizations.getDialog(widget.tag);
 
     if (customization == null) {
-      return Center(
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: const BoxDecoration(
-            color: Color(0xFFFFFFFF),
-            boxShadow: [BoxShadow(blurRadius: 10, color: Color(0x40000000))],
-          ),
-          child: widget.child,
+      return _DialogRenderWidget(
+        decoration: const BoxDecoration(
+          color: Color(0xFFFFFFFF),
+          boxShadow: [BoxShadow(blurRadius: 10, color: Color(0x40000000))],
         ),
+        child: Padding(padding: const EdgeInsets.all(24), child: widget.child),
       );
     }
 
-    return ListenableBuilder(
-      listenable: _status,
-      builder: (context, _) {
-        final decoration = customization.decoration(_status);
-        final textStyle = customization.textStyle(_status);
+    final decoration = customization.decoration(_status);
+    final textStyle = customization.textStyle(_status);
 
-        return Center(
-          child: Container(
-            decoration: decoration,
-            // Dialogs usually have padding defined by their content or customization?
-            // Hixie's doc doesn't specify padding in customization, so we assume decoration handles it or child does.
-            // Decoration usually doesn't handle padding (except sometimes).
-            // We'll let the user handle padding in the child or decoration.
-            child: DefaultTextStyle(style: textStyle, child: widget.child),
-          ),
+    return _DialogRenderWidget(
+      decoration: decoration is BoxDecoration
+          ? decoration
+          : const BoxDecoration(),
+      child: DefaultTextStyle(style: textStyle, child: widget.child),
+    );
+  }
+}
+
+class _DialogRenderWidget extends SingleChildRenderObjectWidget {
+  const _DialogRenderWidget({super.child, required this.decoration});
+
+  final BoxDecoration decoration;
+
+  @override
+  RenderDialogBox createRenderObject(BuildContext context) {
+    return RenderDialogBox(decoration: decoration);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderDialogBox renderObject,
+  ) {
+    renderObject.decoration = decoration;
+  }
+}
+
+class RenderDialogBox extends RenderProxyBox {
+  RenderDialogBox({required BoxDecoration decoration})
+    : _decoration = decoration;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  @override
+  void performLayout() {
+    if (child != null) {
+      // Dialogs usually constrain themselves or are constrained by parent (overlay)
+      child!.layout(constraints.loosen(), parentUsesSize: true);
+      // We center the child within our size
+      size = constraints.biggest;
+    } else {
+      size = constraints.smallest;
+    }
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    if (child == null) return;
+
+    final Size childSize = child!.size;
+    final Offset childOffset = Offset(
+      (size.width - childSize.width) / 2,
+      (size.height - childSize.height) / 2,
+    );
+
+    final Rect rect = (offset + childOffset) & childSize;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0xFFFFFFFF);
+
+    // Paint shadow
+    if (decoration.boxShadow != null) {
+      for (final shadow in decoration.boxShadow!) {
+        context.canvas.drawRect(
+          rect.shift(shadow.offset).inflate(shadow.spreadRadius),
+          shadow.toPaint(),
         );
+      }
+    }
+
+    // Paint background
+    if (decoration.borderRadius != null) {
+      final borderRadius = decoration.borderRadius!.resolve(TextDirection.ltr);
+      context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(
+          context.canvas,
+          rect,
+          borderRadius: borderRadius,
+        );
+      }
+    } else {
+      context.canvas.drawRect(rect, paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(context.canvas, rect);
+      }
+    }
+
+    context.paintChild(child!, offset + childOffset);
+  }
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    if (child == null) return false;
+    final Size childSize = child!.size;
+    final Offset childOffset = Offset(
+      (size.width - childSize.width) / 2,
+      (size.height - childSize.height) / 2,
+    );
+    return result.addWithPaintOffset(
+      offset: childOffset,
+      position: position,
+      hitTest: (BoxHitTestResult result, Offset transformed) {
+        assert(transformed == position - childOffset);
+        return child!.hitTest(result, position: transformed);
       },
     );
   }

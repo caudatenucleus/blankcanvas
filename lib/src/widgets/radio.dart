@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import '../foundation/status.dart';
 import '../theme/theme.dart';
 
@@ -49,13 +50,19 @@ class _RadioState<T> extends State<Radio<T>> with TickerProviderStateMixin {
     );
 
     _hoverController.addListener(
-      () => _status.hovered = _hoverController.value,
+      () => setState(() {
+        _status.hovered = _hoverController.value;
+      }),
     );
     _focusController.addListener(
-      () => _status.focused = _focusController.value,
+      () => setState(() {
+        _status.focused = _focusController.value;
+      }),
     );
     _selectController.addListener(
-      () => _status.selected = _selectController.value,
+      () => setState(() {
+        _status.selected = _selectController.value;
+      }),
     );
 
     _focusNode.addListener(() {
@@ -116,30 +123,110 @@ class _RadioState<T> extends State<Radio<T>> with TickerProviderStateMixin {
       );
     }
 
-    return ListenableBuilder(
-      listenable: _status,
-      builder: (context, _) {
-        final decoration = customization.decoration(_status);
+    final decoration = customization.decoration(_status);
+    final double sizeValue = customization.size ?? 18.0;
 
-        return MouseRegion(
-          onEnter: (_) => _hoverController.forward(),
-          onExit: (_) => _hoverController.reverse(),
-          cursor: widget.onChanged != null
-              ? SystemMouseCursors.click
-              : SystemMouseCursors.basic,
-          child: GestureDetector(
-            onTap: _handleTap,
-            child: Focus(
-              focusNode: _focusNode,
-              child: Container(
-                width: customization.size ?? 18.0,
-                height: customization.size ?? 18.0,
-                decoration: decoration,
-              ),
-            ),
+    return MouseRegion(
+      onEnter: (_) => _hoverController.forward(),
+      onExit: (_) => _hoverController.reverse(),
+      cursor: widget.onChanged != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
+      child: GestureDetector(
+        onTap: _handleTap,
+        child: Focus(
+          focusNode: _focusNode,
+          child: _RadioRenderWidget(
+            decoration: decoration is BoxDecoration
+                ? decoration
+                : const BoxDecoration(shape: BoxShape.circle),
+            sizeValue: sizeValue,
           ),
-        );
-      },
+        ),
+      ),
     );
+  }
+}
+
+class _RadioRenderWidget extends LeafRenderObjectWidget {
+  const _RadioRenderWidget({required this.decoration, required this.sizeValue});
+
+  final BoxDecoration decoration;
+  final double sizeValue;
+
+  @override
+  RenderRadio createRenderObject(BuildContext context) {
+    return RenderRadio(decoration: decoration, sizeValue: sizeValue);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderRadio renderObject,
+  ) {
+    renderObject
+      ..decoration = decoration
+      ..sizeValue = sizeValue;
+  }
+}
+
+class RenderRadio extends RenderBox {
+  RenderRadio({required BoxDecoration decoration, required double sizeValue})
+    : _decoration = decoration,
+      _sizeValue = sizeValue;
+
+  BoxDecoration _decoration;
+  BoxDecoration get decoration => _decoration;
+  set decoration(BoxDecoration value) {
+    if (_decoration == value) return;
+    _decoration = value;
+    markNeedsPaint();
+  }
+
+  double _sizeValue;
+  double get sizeValue => _sizeValue;
+  set sizeValue(double value) {
+    if (_sizeValue == value) return;
+    _sizeValue = value;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    size = constraints.constrain(Size.square(sizeValue));
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final Rect rect = offset & size;
+    final Paint paint = Paint()
+      ..color = decoration.color ?? const Color(0xFFCCCCCC);
+
+    if (decoration.shape == BoxShape.circle) {
+      context.canvas.drawCircle(rect.center, rect.shortestSide / 2, paint);
+      if (decoration.border != null) {
+        decoration.border!.paint(context.canvas, rect, shape: BoxShape.circle);
+      }
+    } else {
+      // Fallback to RRect or Rect if not circle
+      if (decoration.borderRadius != null) {
+        final borderRadius = decoration.borderRadius!.resolve(
+          TextDirection.ltr,
+        );
+        context.canvas.drawRRect(borderRadius.toRRect(rect), paint);
+        if (decoration.border != null) {
+          decoration.border!.paint(
+            context.canvas,
+            rect,
+            borderRadius: borderRadius,
+          );
+        }
+      } else {
+        context.canvas.drawRect(rect, paint);
+        if (decoration.border != null) {
+          decoration.border!.paint(context.canvas, rect);
+        }
+      }
+    }
   }
 }
