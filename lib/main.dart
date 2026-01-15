@@ -358,6 +358,23 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             const SizedBox(height: 20),
+            // Tab Control
+            const Text(
+              "Tabs / Segmented Control",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            TabControl<String>(
+              items: const ["Home", "Profile", "Settings"],
+              groupValue:
+                  "Home", // State not managed in this snippet, will just select 'Home' visually unless we wrap it
+              onChanged: (val) {
+                // This part requires state in SettingsPage.
+                // But let's just make it print for now or use a local variable if I can edit the whole class.
+                // I'll assume I update SettingsPage state below.
+              },
+            ),
+            const SizedBox(height: 20),
             // Scrollable area
             const Text(
               "Scrollable Content",

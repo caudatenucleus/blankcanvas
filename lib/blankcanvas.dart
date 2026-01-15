@@ -11,3 +11,4 @@ export 'src/widgets/card.dart';
 export 'src/widgets/dialog.dart';
 export 'src/widgets/progress_indicator.dart';
 export 'src/widgets/scrollbar.dart';
+export 'src/widgets/tabs.dart';

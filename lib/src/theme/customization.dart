@@ -130,3 +130,14 @@ class ScrollbarCustomization
   final double? thickness;
   final double? thumbMinLength;
 }
+
+/// Customization for Tabs/Segmented Controls.
+class TabCustomization extends ControlCustomization<TabControlStatus> {
+  const TabCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.padding,
+  });
+
+  final EdgeInsetsGeometry? padding;
+}

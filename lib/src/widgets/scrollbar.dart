@@ -94,6 +94,7 @@ class _ScrollbarState extends State<Scrollbar> with TickerProviderStateMixin {
     // This requires a ScrollController. If one isn't passed, we can't easily track offset without Notifications.
     // We will use NotificationListener<ScrollNotification>.
 
+    return _CustomScrollbarBody(
       customization: customization,
       controller: widget.controller,
       status: _status,

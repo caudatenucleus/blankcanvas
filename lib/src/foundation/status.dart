@@ -145,3 +145,16 @@ class ScrollbarControlStatus extends MutableControlStatus {
     }
   }
 }
+
+/// Status for a Tab or Segmented Button.
+class TabControlStatus extends MutableControlStatus {
+  /// Whether the tab is currently selected.
+  double get selected => _selected;
+  double _selected = 0.0;
+  set selected(double v) {
+    if (_selected != v) {
+      _selected = v;
+      notify();
+    }
+  }
+}
