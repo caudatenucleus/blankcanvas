@@ -20,6 +20,9 @@ class ControlCustomizations {
     this.bottomBars = const {},
     this.bottomBarItems = const {},
     this.drawers = const {},
+    this.badges = const {},
+    this.dividers = const {},
+    this.tooltips = const {},
   });
 
   /// Map of button tags to their customization. Null key is the default.
@@ -43,6 +46,9 @@ class ControlCustomizations {
   final Map<String?, BottomBarCustomization> bottomBars;
   final Map<String?, BottomBarItemCustomization> bottomBarItems;
   final Map<String?, DrawerCustomization> drawers;
+  final Map<String?, BadgeCustomization> badges;
+  final Map<String?, DividerCustomization> dividers;
+  final Map<String?, TooltipCustomization> tooltips;
 
   ButtonCustomization? getButton(String? tag) => buttons[tag] ?? buttons[null];
   TextFieldCustomization? getTextField(String? tag) =>
@@ -68,6 +74,11 @@ class ControlCustomizations {
   BottomBarItemCustomization? getBottomBarItem(String? tag) =>
       bottomBarItems[tag] ?? bottomBarItems[null];
   DrawerCustomization? getDrawer(String? tag) => drawers[tag] ?? drawers[null];
+  BadgeCustomization? getBadge(String? tag) => badges[tag] ?? badges[null];
+  DividerCustomization? getDivider(String? tag) =>
+      dividers[tag] ?? dividers[null];
+  TooltipCustomization? getTooltip(String? tag) =>
+      tooltips[tag] ?? tooltips[null];
 }
 
 /// An [InheritedWidget] that provides [ControlCustomizations] to its descendants.

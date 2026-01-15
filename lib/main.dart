@@ -479,6 +479,25 @@ class _SettingsPageState extends State<SettingsPage> {
               child: const Text('Show Dialog'),
             ),
             const SizedBox(height: 20),
+            // Utilities
+            const Text(
+              "Utilities",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            const Text("Badge"),
+            const SizedBox(height: 5),
+            const Badge(label: Text("1"), child: Icon(Icons.notifications)),
+            const SizedBox(height: 10),
+            const Text("Divider"),
+            const Divider(),
+            const SizedBox(height: 10),
+            const Text("Tooltip (Hover/Long Press)"),
+            const Tooltip(
+              message: "I am a custom tooltip!",
+              child: Button(onPressed: null, child: Text("Hover Me")),
+            ),
+            const SizedBox(height: 20),
             Button(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Back'),

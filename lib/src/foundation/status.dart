@@ -186,3 +186,26 @@ class BottomBarItemControlStatus extends MutableControlStatus {
 class DrawerControlStatus extends MutableControlStatus {
   // Container status.
 }
+
+/// Status for a Badge.
+class BadgeControlStatus extends MutableControlStatus {
+  // Usually static, but could animate on value change.
+}
+
+/// Status for a Divider.
+class DividerControlStatus extends MutableControlStatus {
+  // Static visual.
+}
+
+/// Status for a Tooltip.
+class TooltipControlStatus extends MutableControlStatus {
+  /// Whether the tooltip is currently visible/active.
+  double get visible => _visible;
+  double _visible = 0.0;
+  set visible(double v) {
+    if (_visible != v) {
+      _visible = v;
+      notify();
+    }
+  }
+}

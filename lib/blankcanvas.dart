@@ -15,3 +15,6 @@ export 'src/widgets/tabs.dart';
 export 'src/widgets/menu.dart';
 export 'src/widgets/bottom_bar.dart';
 export 'src/widgets/drawer.dart';
+export 'src/widgets/badge.dart';
+export 'src/widgets/divider.dart';
+export 'src/widgets/tooltip.dart';

@@ -198,3 +198,48 @@ class DrawerCustomization extends ControlCustomization<DrawerControlStatus> {
   final double? width;
   final Color? modalBarrierColor;
 }
+
+/// Customization for Badges.
+class BadgeCustomization extends ControlCustomization<BadgeControlStatus> {
+  const BadgeCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.padding,
+    this.alignment,
+  });
+
+  final EdgeInsetsGeometry? padding;
+  final AlignmentGeometry? alignment;
+}
+
+/// Customization for Dividers.
+class DividerCustomization extends ControlCustomization<DividerControlStatus> {
+  const DividerCustomization({
+    required super.decoration,
+    required super.textStyle, // Usually unused or used for label in splitters
+    this.thickness,
+    this.indent,
+    this.endIndent,
+  });
+
+  final double? thickness;
+  final double? indent;
+  final double? endIndent;
+}
+
+/// Customization for Tooltips.
+class TooltipCustomization extends ControlCustomization<TooltipControlStatus> {
+  const TooltipCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.padding,
+    this.margin,
+    this.waitDuration,
+    this.showDuration,
+  });
+
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final Duration? waitDuration;
+  final Duration? showDuration;
+}
