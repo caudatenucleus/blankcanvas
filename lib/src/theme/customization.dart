@@ -141,3 +141,23 @@ class TabCustomization extends ControlCustomization<TabControlStatus> {
 
   final EdgeInsetsGeometry? padding;
 }
+
+/// Customization for Menus (Container).
+class MenuCustomization extends ControlCustomization<CardControlStatus> {
+  const MenuCustomization({
+    required super.decoration,
+    required super.textStyle,
+  });
+}
+
+/// Customization for Menu Items.
+class MenuItemCustomization
+    extends ControlCustomization<MenuItemControlStatus> {
+  const MenuItemCustomization({
+    required super.decoration,
+    required super.textStyle,
+    this.padding,
+  });
+
+  final EdgeInsetsGeometry? padding;
+}

@@ -15,6 +15,8 @@ class ControlCustomizations {
     this.dialogs = const {},
     this.scrollbars = const {},
     this.tabs = const {},
+    this.menus = const {},
+    this.menuItems = const {},
   });
 
   /// Map of button tags to their customization. Null key is the default.
@@ -33,6 +35,8 @@ class ControlCustomizations {
   final Map<String?, DialogCustomization> dialogs;
   final Map<String?, ScrollbarCustomization> scrollbars;
   final Map<String?, TabCustomization> tabs;
+  final Map<String?, MenuCustomization> menus;
+  final Map<String?, MenuItemCustomization> menuItems;
 
   ButtonCustomization? getButton(String? tag) => buttons[tag] ?? buttons[null];
   TextFieldCustomization? getTextField(String? tag) =>
@@ -50,6 +54,9 @@ class ControlCustomizations {
   ScrollbarCustomization? getScrollbar(String? tag) =>
       scrollbars[tag] ?? scrollbars[null];
   TabCustomization? getTab(String? tag) => tabs[tag] ?? tabs[null];
+  MenuCustomization? getMenu(String? tag) => menus[tag] ?? menus[null];
+  MenuItemCustomization? getMenuItem(String? tag) =>
+      menuItems[tag] ?? menuItems[null];
 }
 
 /// An [InheritedWidget] that provides [ControlCustomizations] to its descendants.

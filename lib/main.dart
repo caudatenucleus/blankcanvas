@@ -277,6 +277,8 @@ class _SettingsPageState extends State<SettingsPage> {
   int _volume = 5;
   double _brightness = 0.5;
 
+  void _dummyCallback() {}
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -373,6 +375,23 @@ class _SettingsPageState extends State<SettingsPage> {
                 // But let's just make it print for now or use a local variable if I can edit the whole class.
                 // I'll assume I update SettingsPage state below.
               },
+            ),
+            const SizedBox(height: 20),
+            // Menu
+            const Text("Menu", style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Menu(
+              children: [
+                const MenuItem(onPressed: null, child: Text("Item 1")),
+                MenuItem(
+                  onPressed: _dummyCallback,
+                  child: const Text("Item 2 (Click me)"),
+                ),
+                MenuItem(
+                  onPressed: _dummyCallback,
+                  child: const Text("Item 3"),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             // Scrollable area

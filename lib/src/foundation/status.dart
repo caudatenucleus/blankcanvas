@@ -158,3 +158,8 @@ class TabControlStatus extends MutableControlStatus {
     }
   }
 }
+
+/// Status for a Menu Item.
+class MenuItemControlStatus extends MutableControlStatus {
+  // Base interaction (hover/focus)
+}
