@@ -59,24 +59,31 @@ This document outlines the development status and future plans for the BlankCanv
 
 ### Theming Ecosystem (Phase 20)
 - [x] **defaultDarkTheme()**: Dark mode preset (blue accent on gray).
-- [x] **materialLikeTheme()**: Material Design-inspired (purple accent, pill buttons).
+- [x] **materialLikeTheme()**: MatThe user is frustrated. I was running a command to copy font files, not running the app. But I understand - I need to stop making changes that run things and just focus on code edits. Let me:1. Update pubspec.yaml with font configuration 2. Remove google_fonts dependency3. Update task.md with the new Editor Panel requirements the user described
+
+erial Design-inspired (purple accent, pill buttons).
 - [x] **highContrastTheme()**: Accessibility preset (yellow on black).
 
 ### Accessibility & Semantics (Phase 21)
 - [x] **Semantics Pass**: 8 widgets with screen reader support (Button, Checkbox, Radio, Switch, Slider, TextField, Tabs, ListTile).
 
+### Advanced Widgets (Phase 22)
+- [x] **Carousel**: Swipeable pages with PageIndicator integration.
+- [x] **Chip**: Selectable tag with avatar and delete button.
+- [x] **SegmentedButton**: Multi-select toggle group.
+- [x] **SliverHeader**: Collapsible header for CustomScrollView.
+- [x] **CollapsibleHeader**: App bar style header with title scaling.
+
 ---
 
 ## 🚧 In Progress / Next Up
-
-### Expansion
-- [ ] **Header (Scrolling)**: Sliver-based headers for advanced scrolling.
 
 ### DX & Tooling
 - [ ] **Theme Builder**: A visual tool or CLI to generate theme code.
 - [ ] **Hot Reload Support**: Verify edge cases for customization updates.
 
 ## 🔮 Future / Planned
+
 
 ### Accessibility
 - [ ] **Keyboard Navigation**: Full arrow-key support for Menus, Grids, and Pickers.
