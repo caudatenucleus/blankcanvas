@@ -1,0 +1,27 @@
+// BlankCanvas Workstation Barrel File
+export 'docking_layout.dart';
+export 'tabbed_dock.dart';
+export 'tear_off_tab.dart';
+export 'floating_panel.dart';
+export 'panel_draggable.dart';
+export 'panel_resizer.dart';
+export 'panel_collapse.dart';
+export 'side_drawer.dart';
+export 'property_grid_layout.dart';
+export 'inspector_view.dart';
+export 'breadcrumb_navigation.dart';
+export 'shelf_layout.dart';
+export 'status_line.dart';
+export 'info_header.dart';
+export 'contextual_toolbar.dart';
+export 'command_search.dart';
+export 'workspace_manager.dart';
+export 'layout_persister.dart';
+export 'multi_viewport_manager.dart';
+export 'viewport_hud.dart';
+export 'window_overlay.dart';
+// export 'tools.dart';
+// export 'workspace.dart';
+// export 'panels.dart';
+// export 'inspector.dart';
+// export 'docking.dart';

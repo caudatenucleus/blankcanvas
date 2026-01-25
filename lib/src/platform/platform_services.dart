@@ -1,0 +1,43 @@
+// Copyright 2026 The BlankCanvas Authors. All rights reserved.
+// Barrel file for platform_services.dart
+
+export 'haptic_feedback_primitive.dart';
+export 'system_sound_primitive.dart';
+export 'clipboard_primitive.dart';
+export 'system_navigator_primitive.dart';
+export 'platform_channel_primitive.dart';
+export 'text_input_channel_primitive.dart';
+export 'lifecycle_channel_primitive.dart';
+export 'navigation_channel_primitive.dart';
+export 'key_event_channel_primitive.dart';
+export 'system_channel_primitive.dart';
+export 'accessibility_channel_primitive.dart';
+export 'mouse_cursor_channel_primitive.dart';
+export 'restoration_channel_primitive.dart';
+export 'deferred_component_channel_primitive.dart';
+export 'method_channel_primitive.dart';
+export 'event_channel_primitive.dart';
+export 'basic_message_channel_primitive.dart';
+export 'standard_message_codec_primitive.dart';
+export 'j_s_o_n_message_codec_primitive.dart';
+export 'binary_codec_primitive.dart';
+export 'string_codec_primitive.dart';
+export 'spring_description_primitive.dart';
+export 'tolerance_primitive.dart';
+export 'near_equal_primitive.dart';
+export 'vector2_primitive.dart';
+export 'vector3_primitive.dart';
+export 'vector4_primitive.dart';
+export 'matrix2_primitive.dart';
+export 'matrix3_primitive.dart';
+export 'matrix4_primitive.dart';
+export 'quaternion_primitive.dart';
+export 'change_notifier_primitive.dart';
+export 'value_notifier_primitive.dart';
+export 'observer_list_primitive.dart';
+export 'synchronous_future_primitive.dart';
+export 'unique_key_primitive.dart';
+export 'value_key_primitive.dart';
+export 'object_key_primitive.dart';
+export 'labeled_global_key_primitive.dart';
+export 'platform_dispatcher_primitive.dart';

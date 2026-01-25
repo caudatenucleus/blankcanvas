@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+export 'customization.dart';
 import 'customization.dart';
 
 /// A collection of customizations for all controls in the app.
@@ -31,6 +32,15 @@ class ControlCustomizations {
     this.accordions = const {},
     this.listTiles = const {},
     this.avatars = const {},
+    this.dropdowns = const {},
+    this.ratings = const {},
+    this.splitters = const {},
+    this.toolbars = const {},
+    this.spinners = const {},
+    this.carousels = const {},
+    this.chips = const {},
+    this.segmentedButtons = const {},
+    this.headers = const {},
   });
 
   /// Map of button tags to their customization. Null key is the default.
@@ -65,6 +75,15 @@ class ControlCustomizations {
   final Map<String?, AccordionCustomization> accordions;
   final Map<String?, ListTileCustomization> listTiles;
   final Map<String?, AvatarCustomization> avatars;
+  final Map<String?, DropdownCustomization> dropdowns;
+  final Map<String?, RatingsCustomization> ratings;
+  final Map<String?, SplitterCustomization> splitters;
+  final Map<String?, ToolbarCustomization> toolbars;
+  final Map<String?, SpinnerCustomization> spinners;
+  final Map<String?, CarouselCustomization> carousels;
+  final Map<String?, ChipCustomization> chips;
+  final Map<String?, SegmentedButtonCustomization> segmentedButtons;
+  final Map<String?, HeaderCustomization> headers;
 
   ButtonCustomization? getButton(String? tag) => buttons[tag] ?? buttons[null];
   TextFieldCustomization? getTextField(String? tag) =>
@@ -110,6 +129,22 @@ class ControlCustomizations {
   ListTileCustomization? getListTile(String? tag) =>
       listTiles[tag] ?? listTiles[null];
   AvatarCustomization? getAvatar(String? tag) => avatars[tag] ?? avatars[null];
+  DropdownCustomization? getDropdown(String? tag) =>
+      dropdowns[tag] ?? dropdowns[null];
+  RatingsCustomization? getRatings(String? tag) =>
+      ratings[tag] ?? ratings[null];
+  SplitterCustomization? getSplitter(String? tag) =>
+      splitters[tag] ?? splitters[null];
+  ToolbarCustomization? getToolbar(String? tag) =>
+      toolbars[tag] ?? toolbars[null];
+  SpinnerCustomization? getSpinner(String? tag) =>
+      spinners[tag] ?? spinners[null];
+  CarouselCustomization? getCarousel(String? tag) =>
+      carousels[tag] ?? carousels[null];
+  ChipCustomization? getChip(String? tag) => chips[tag] ?? chips[null];
+  SegmentedButtonCustomization? getSegmentedButton(String? tag) =>
+      segmentedButtons[tag] ?? segmentedButtons[null];
+  HeaderCustomization? getHeader(String? tag) => headers[tag] ?? headers[null];
 
   /// A default theme that provides a standard look for all widgets.
   factory ControlCustomizations.defaultTheme() {
@@ -185,8 +220,15 @@ class ControlCustomizations {
       accordions: {null: AccordionCustomization.simple()},
       listTiles: {null: ListTileCustomization.simple()},
       avatars: {null: AvatarCustomization.simple()},
-
-      // Add other defaults as needed or build them manually if simple() is missing
+      dropdowns: {null: DropdownCustomization.simple()},
+      ratings: {null: RatingsCustomization.simple()},
+      splitters: {null: SplitterCustomization.simple()},
+      toolbars: {null: ToolbarCustomization.simple()},
+      spinners: {null: SpinnerCustomization.simple()},
+      carousels: {null: CarouselCustomization.simple()},
+      chips: {null: ChipCustomization.simple()},
+      segmentedButtons: {null: SegmentedButtonCustomization.simple()},
+      headers: {null: HeaderCustomization.simple()},
     );
   }
 
@@ -247,9 +289,59 @@ class ControlCustomizations {
           backgroundColor: const Color(0xFF424242),
         ),
       },
-      dataTables: {null: DataTableCustomization.simple()},
-      steppers: {null: StepperCustomization.simple()},
-      accordions: {null: AccordionCustomization.simple()},
+      dropdowns: {
+        null: DropdownCustomization.simple(
+          backgroundColor: const Color(0xFF303030),
+          borderColor: const Color(0xFF616161),
+          textColor: const Color(0xFFE0E0E0),
+          menuBackgroundColor: const Color(0xFF424242),
+          itemTextColor: const Color(0xFFE0E0E0),
+        ),
+      },
+      ratings: {
+        null: RatingsCustomization.simple(
+          emptyStarColor: const Color(0xFF616161),
+        ),
+      },
+      splitters: {
+        null: SplitterCustomization.simple(
+          dividerColor: const Color(0xFF616161),
+        ),
+      },
+      toolbars: {
+        null: ToolbarCustomization.simple(
+          backgroundColor: const Color(0xFF1565C0),
+        ),
+      },
+      spinners: {
+        null: SpinnerCustomization.simple(color: const Color(0xFF64B5F6)),
+      },
+      carousels: {
+        null: CarouselCustomization.simple(
+          indicatorColor: const Color(0xFF616161),
+          indicatorSelectedColor: const Color(0xFF64B5F6),
+        ),
+      },
+      chips: {
+        null: ChipCustomization.simple(
+          backgroundColor: const Color(0xFF424242),
+          textColor: const Color(0xFFE0E0E0),
+          selectedColor: const Color(0xFF616161),
+        ),
+      },
+      segmentedButtons: {
+        null: SegmentedButtonCustomization.simple(
+          backgroundColor: const Color(0xFF303030),
+          borderColor: const Color(0xFF616161),
+          textColor: const Color(0xFFE0E0E0),
+          selectedColor: const Color(0xFF424242),
+        ),
+      },
+      headers: {
+        null: HeaderCustomization.simple(
+          backgroundColor: const Color(0xFF1565C0),
+        ),
+      },
     );
   }
 
@@ -307,6 +399,42 @@ class ControlCustomizations {
       dataTables: {null: DataTableCustomization.simple()},
       steppers: {null: StepperCustomization.simple()},
       accordions: {null: AccordionCustomization.simple()},
+      dropdowns: {null: DropdownCustomization.simple()},
+      ratings: {
+        null: RatingsCustomization.simple(starColor: const Color(0xFFFFC107)),
+      },
+      splitters: {null: SplitterCustomization.simple()},
+      toolbars: {
+        null: ToolbarCustomization.simple(
+          backgroundColor: const Color(0xFF6200EE),
+        ),
+      },
+      spinners: {
+        null: SpinnerCustomization.simple(color: const Color(0xFF6200EE)),
+      },
+      carousels: {
+        null: CarouselCustomization.simple(
+          indicatorSelectedColor: const Color(0xFF6200EE),
+        ),
+      },
+      chips: {
+        null: ChipCustomization.simple(
+          selectedColor: const Color(0xFF6200EE),
+          selectedTextColor: const Color(0xFFFFFFFF),
+        ),
+      },
+      segmentedButtons: {
+        null: SegmentedButtonCustomization.simple(
+          selectedColor: const Color(0xFFE1BEE7),
+          borderColor: const Color(0xFF6200EE),
+          selectedTextColor: const Color(0xFF6200EE),
+        ),
+      },
+      headers: {
+        null: HeaderCustomization.simple(
+          backgroundColor: const Color(0xFF6200EE),
+        ),
+      },
     );
   }
 
@@ -370,6 +498,62 @@ class ControlCustomizations {
       dataTables: {null: DataTableCustomization.simple()},
       steppers: {null: StepperCustomization.simple()},
       accordions: {null: AccordionCustomization.simple()},
+      dropdowns: {
+        null: DropdownCustomization.simple(
+          backgroundColor: const Color(0xFF000000),
+          borderColor: const Color(0xFFFFFFFF),
+          textColor: const Color(0xFFFFFFFF),
+        ),
+      },
+      ratings: {
+        null: RatingsCustomization.simple(
+          starColor: const Color(0xFFFFFF00),
+          emptyStarColor: const Color(0xFFFFFFFF),
+        ),
+      },
+      splitters: {
+        null: SplitterCustomization.simple(
+          dividerColor: const Color(0xFFFFFFFF),
+        ),
+      },
+      toolbars: {
+        null: ToolbarCustomization.simple(
+          backgroundColor: const Color(0xFF000000),
+          foregroundColor: const Color(0xFFFFFF00),
+        ),
+      },
+      spinners: {
+        null: SpinnerCustomization.simple(color: const Color(0xFFFFFF00)),
+      },
+      carousels: {
+        null: CarouselCustomization.simple(
+          indicatorColor: const Color(0xFFFFFFFF),
+          indicatorSelectedColor: const Color(0xFFFFFF00),
+        ),
+      },
+      chips: {
+        null: ChipCustomization.simple(
+          backgroundColor: const Color(0xFF000000),
+          textColor: const Color(0xFFFFFFFF),
+          selectedColor: const Color(0xFFFFFF00),
+          selectedTextColor: const Color(0xFF000000),
+        ),
+      },
+      segmentedButtons: {
+        null: SegmentedButtonCustomization.simple(
+          backgroundColor: const Color(0xFF000000),
+          borderColor: const Color(0xFFFFFFFF),
+          textColor: const Color(0xFFFFFFFF),
+          selectedColor: const Color(0xFFFFFF00),
+          selectedTextColor: const Color(0xFF000000),
+        ),
+      },
+      headers: {
+        null: HeaderCustomization.simple(
+          backgroundColor: const Color(0xFF000000),
+          foregroundColor: const Color(0xFFFFFF00),
+        ),
+      },
     );
   }
 }
