@@ -1,9 +1,0 @@
-// Copyright 2026 The BlankCanvas Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license.
-
-import 'package:flutter/services.dart';
-
-
-class BinaryCodecPrimitive extends BinaryCodec {
-  const BinaryCodecPrimitive();
-}

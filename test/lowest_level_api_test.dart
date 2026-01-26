@@ -79,17 +79,22 @@ void main() {
           final className = match.group(1);
           final baseClass = match.group(2);
 
-          if (className == null || baseClass == null) continue;
-          if (className.startsWith('_') || className.startsWith('Render'))
+          if (className == null || baseClass == null) {
             continue;
+          }
+          if (className.startsWith('_') || className.startsWith('Render')) {
+            continue;
+          }
           if (className.endsWith('Data') ||
               className.endsWith('Context') ||
-              className.endsWith('Registry'))
+              className.endsWith('Registry')) {
             continue;
+          }
           if (className.endsWith('Action') ||
               className.endsWith('Item') ||
-              className.endsWith('Status'))
+              className.endsWith('Status')) {
             continue;
+          }
 
           if (content.contains('createRenderObject') ||
               content.contains('extends SingleChildRenderObjectWidget') ||
@@ -175,8 +180,9 @@ void main() {
               banned.endsWith('Transition')) {
             continue;
           }
-          if (filename.endsWith('image_gallery.dart') && banned == 'Image')
+          if (filename.endsWith('image_gallery.dart') && banned == 'Image') {
             continue;
+          }
 
           // Look for widget instantiation: BannedWidget(
           // and exclude if it's layout or internal prefixed
